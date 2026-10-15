@@ -3,10 +3,11 @@ import {supabase} from './supabase';
 import {LayoutDashboard,CalendarCheck2,History,BookOpen,LogOut,Leaf,ArrowLeft,UsersRound,Menu,X,Sun,Moon,UserRound,ShieldCheck,Camera,BookMarked,ExternalLink,Pencil,Trash2,AlertTriangle,Eye,UserCheck,UserMinus} from 'lucide-react';
 type Profile={id:string;full_name:string;role:'director'|'admin'|'member';active?:boolean};
 type Book={id:string;title:string;author:string|null;status:string;source_url?:string|null;description?:string|null;cover_url?:string|null};
-type Session={id:string;session_date:string;study_type:string;book_id:string|null;description:string|null};
+type Session={id:string;session_date:string;study_type:string;book_id:string|null;description:string|null;start_time:string|null;end_time:string|null};
 type Attendance={session_id:string;member_id:string;status:'present'|'absent'};
 type SessionResponse={session_id:string;member_id:string;response:'attended'|'compensated';compensation_text:string|null};
 const today=()=>new Date(Date.now()+3*3600_000).toISOString().slice(0,10);
+const sessionEnded=(x:Session)=>Date.now()>=new Date(x.session_date+'T'+(x.end_time||'23:59:59')+'+03:00').getTime();
 const authConnectionError=(message:string)=>/failed to fetch|networkerror|network request failed|fetch failed|load failed/i.test(message)?'تعذر الاتصال بخدمة تسجيل الحسابات. تحققي من الإنترنت، وجربي شبكة أخرى ثم أعيدي المحاولة. إذا استمرت المشكلة، افتحي رابط فحص اتصال Supabase.':message;
 const emailError=(message:string)=>/rate limit|email.*limit|over_email_send_rate_limit|too many requests/i.test(message)?'تم بلوغ حد إرسال البريد لدى خدمة Supabase. انتظري قليلًا قبل إعادة المحاولة، أو فعّلي SMTP مخصصًا من إعدادات المشروع لرفع السعة. لا يمكن إلغاء حد المزوّد من داخل نبت.':message;
 const statusLabel=(s:string)=>({planned:'مخطط لها',in_progress:'قيد الدراسة',completed:'مكتملة'}[s]||s);
@@ -40,7 +41,7 @@ export default function App(){
  const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[notice,setNotice]=useState('');
  const [register,setRegister]=useState(false),[fullName,setFullName]=useState(''),[confirmPassword,setConfirmPassword]=useState('');
  const [members,setMembers]=useState<Profile[]>([]),[books,setBooks]=useState<Book[]>([]),[sessions,setSessions]=useState<Session[]>([]),[attendance,setAttendance]=useState<Attendance[]>([]);
- const [date,setDate]=useState(today()),[studyType,setStudyType]=useState('دراسة'),[bookId,setBookId]=useState(''),[sessionDescription,setSessionDescription]=useState('');
+ const [date,setDate]=useState(today()),[studyType,setStudyType]=useState('دراسة'),[bookId,setBookId]=useState(''),[sessionDescription,setSessionDescription]=useState(''),[startTime,setStartTime]=useState('09:00'),[endTime,setEndTime]=useState('11:00');
  const [memberSearch,setMemberSearch]=useState('');
  const [responses,setResponses]=useState<SessionResponse[]>([]),[compensating,setCompensating]=useState<string|null>(null),[compText,setCompText]=useState('');
  const [selected,setSelected]=useState<Record<string,'present'|'absent'>>({});
@@ -52,7 +53,7 @@ export default function App(){
   const [m,b,s,a,r]=await Promise.all([
    supabase.from('profiles').select('id,full_name,role,active').order('full_name'),
    supabase.from('books').select('id,title,author,status,source_url,description,cover_url').order('created_at',{ascending:false}),
-   supabase.from('sessions').select('id,session_date,study_type,book_id,description').order('session_date',{ascending:false}).limit(120),
+   supabase.from('sessions').select('id,session_date,study_type,book_id,description,start_time,end_time').order('session_date',{ascending:false}).limit(120),
    supabase.from('attendance').select('session_id,member_id,status'),
    supabase.from('session_responses').select('session_id,member_id,response,compensation_text')]);
   if(m.error||b.error||s.error||a.error)setNotice('تعذر تحميل بعض البيانات. تحققي من الاتصال والصلاحيات.');
