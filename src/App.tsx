@@ -109,10 +109,11 @@ export default function App(){
  finally{setSaving(false);}
  }
  async function changeUser(user:Profile,changes:{role?:Profile['role'];active?:boolean}){if(!supabase||!director||user.id===uid){setNotice('لا يمكن تعديل صلاحية أو حالة حسابك من هذه الصفحة.');return;}if(user.role==='director'&&changes.role&&changes.role!=='director'){setNotice('لا يمكن تخفيض صلاحية مديرة أخرى من هذه الواجهة.');return;}setSaving(true);const {error}=await supabase.from('profiles').update(changes).eq('id',user.id);setNotice(error?'تعذر تحديث المستخدم: '+error.message:'تم تحديث المستخدم بنجاح');if(!error)await reload();setSaving(false);}
- const myAttendance=attendance.filter(a=>a.member_id===uid);
- const recorded=myAttendance.length,attendanceCount=myAttendance.filter(a=>a.status==='present').length;
- const percent=myAttendance.length?Math.round(attendanceCount/myAttendance.length*100):null;
- const myCompletedBooks=books.filter(b=>b.status==='completed'&&(()=>{const bookSessions=sessions.filter(s=>s.book_id===b.id);if(!bookSessions.length)return false;const attended=bookSessions.filter(s=>myAttendance.some(a=>a.session_id===s.id&&a.status==='present')).length;return attended/bookSessions.length>=0.8;})()).length;
+ const myResponses=responses.filter(r=>r.member_id===uid);
+ const recorded=sessions.filter(x=>x.session_date<today()).length;
+ const attendanceCount=myResponses.filter(r=>r.response==='attended').length;
+ const percent=recorded?Math.round(myResponses.length/recorded*100):null;
+ const myCompletedBooks=books.filter(b=>b.status==='completed'&&sessions.some(session=>session.book_id===b.id&&myResponses.some(r=>r.session_id===session.id))).length;
  if(!supabase)return <main className="login"><section className="card"><h1>نبت</h1><p>يرجى ضبط متغيرات Supabase قبل التشغيل.</p></section></main>;
 
  const installBanner=mobileDevice&&!installed&&showInstall?<div className="pwa-banner" role="region" aria-label="تثبيت نبت"><img src="/NABT/nabt-logo.svg" alt=""/><div><strong>ثبّتي نبت على جوالك</strong><p>{installInstructions?(iosDevice?'من زر المشاركة في Safari اختاري «إضافة إلى الشاشة الرئيسية».':'من قائمة المتصفح اختاري «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».'):'استخدمي نبت كتطبيق من الشاشة الرئيسية بسهولة.'}</p><div className="pwa-buttons"><button type="button" className="pwa-install" onClick={()=>void requestInstall()}>{installInstructions?'عرض الإرشادات':'تثبيت نبت'}</button><button type="button" className="pwa-later" onClick={dismissInstall}>لاحقًا</button></div></div></div>:null;
