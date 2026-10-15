@@ -127,7 +127,7 @@ export default function App(){
  return <div className="layout">
  {installBanner}
  <aside className={menuOpen?'sidebar open':'sidebar'}>
-  <div className="brand-head"><div className="brand-emblem"><img className="theme-brand-logo" src="/NABT/nabt-logo.svg" alt="شعار نبت"/></div><div><h2>نبت</h2><small>رحلة معرفة ونمو</small></div></div>
+  <div className="brand-head"><div className="brand-emblem"><img className="theme-brand-logo" src="/NABT/nabt-logo.svg" alt="شعار نبت"/></div><div><h2>نبت</h2><small>وَأَنْبَتَهَا نَبَاتًا حَسَنًا</small></div></div>
   <p className="sidebar-label">القائمة الرئيسية</p>
   <nav aria-label="القائمة الرئيسية">
    <a href="#home" className={view==='home'?'active':''} onClick={()=>{setView('home');setMenuOpen(false)}}><LayoutDashboard size={19}/>الرئيسية</a>
