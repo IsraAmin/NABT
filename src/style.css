@@ -466,3 +466,17 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .session-description-input{display:block;margin:16px 0 20px;color:var(--ink);font-weight:700;font-size:12px}
 .session-description-input textarea{display:block;width:100%;min-height:106px;margin-top:8px;padding:13px 15px;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--ink);font:inherit;resize:vertical;line-height:1.9}
 .session-description{white-space:pre-wrap;overflow-wrap:anywhere;line-height:2!important;color:var(--ink)!important;border-top:1px solid var(--line);padding-top:12px;margin-top:3px!important}
+
+/* Dedicated session description editor: consistent across desktop/mobile and themes */
+#record .session-description-field{margin:22px 0 23px;padding:20px 22px;background:var(--canvas);border:1px solid var(--line);border-radius:17px;min-width:0}
+#record .session-description-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px}
+#record .session-description-heading label{font-size:13px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+#record .session-description-heading label span{font-size:10px;color:var(--muted);font-weight:500;padding:3px 9px;border:1px solid var(--line);border-radius:99px;background:var(--surface)}
+#record .session-description-heading small{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+#record .session-description-field>p{margin:0 0 13px;color:var(--muted);font-size:11px;line-height:1.9}
+#record .session-description-field>textarea{box-sizing:border-box;display:block;width:100%;min-width:0;min-height:150px;resize:vertical;padding:15px 17px;border:1px solid var(--line);border-radius:12px;outline:none;background:var(--surface);color:var(--ink);font-family:"Cairo",Tahoma,Arial,sans-serif;line-height:2;font-size:12px;transition:border-color .15s,box-shadow .15s}
+#record .session-description-field>textarea::placeholder{color:var(--muted);opacity:.85}
+#record .session-description-field>textarea:focus{border-color:#39845a;box-shadow:0 0 0 3px #39845a22}
+[data-theme="dark"] #record .session-description-field{background:#1b2c22}
+[data-theme="dark"] #record .session-description-field>textarea{background:#17261d}
+@media(max-width:600px){#record .session-description-field{padding:15px;margin:18px 0}#record .session-description-heading{align-items:flex-start}#record .session-description-field>textarea{min-height:140px}}
