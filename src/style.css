@@ -480,3 +480,14 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 [data-theme="dark"] #record .session-description-field{background:#1b2c22}
 [data-theme="dark"] #record .session-description-field>textarea{background:#17261d}
 @media(max-width:600px){#record .session-description-field{padding:15px;margin:18px 0}#record .session-description-heading{align-items:flex-start}#record .session-description-field>textarea{min-height:140px}}
+
+/* Homepage: clearly separated horizontal session lanes */
+.schedule-group{min-width:0;margin-top:7px}
+.schedule-group-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}
+.schedule-group-head h3{margin:0 0 4px;color:var(--ink);font-size:18px;font-weight:800}
+.schedule-group-head p{margin:0;color:var(--muted);font-size:11px;line-height:1.8}
+.schedule-group-head>span{flex-shrink:0;font-size:11px;color:var(--primary);background:var(--surface);border:1px solid var(--line);padding:7px 11px;border-radius:20px}
+.schedule-home .schedule-carousel{display:flex;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:3px;gap:15px;padding:3px 3px 16px;max-width:100%;scrollbar-width:thin;scrollbar-color:#8cbaa0 transparent}
+.schedule-carousel .schedule-card{flex:0 0 clamp(255px,31%,350px);scroll-snap-align:start;align-self:stretch}
+.session-table-description{min-width:200px;max-width:320px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;line-height:1.9}
+@media(max-width:800px){.schedule-carousel .schedule-card{flex-basis:min(83vw,345px)}.schedule-group-head h3{font-size:16px}.schedule-group-head p{font-size:10px}}
