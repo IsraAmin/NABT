@@ -260,3 +260,14 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .welcome .growth-art{opacity:.65;transform:scale(.7);transform-origin:center}
 @media(max-width:800px){.welcome{min-height:175px;padding:25px;margin-bottom:22px}.welcome h1{font-size:23px}}
 @media(max-width:520px){.welcome{min-height:170px;padding:22px 19px}.welcome h1{font-size:21px}.welcome .growth-art{opacity:.3}}
+
+/* NABT identity: same uploaded transparent mark, theme-responsive */
+.brand-emblem{background:transparent!important;border-radius:0}
+.brand-emblem img.theme-brand-logo{width:46px;height:46px;object-fit:contain;border-radius:0}
+.topbar-brand{display:inline-flex;align-items:center;gap:8px;color:var(--ink);font-size:12px}
+.topbar-brand strong{font-size:13px;font-weight:800}
+.topbar-brand .theme-brand-logo{width:25px;height:25px;object-fit:contain;flex-shrink:0}
+.theme-brand-logo{filter:none}
+[data-theme="dark"] .theme-brand-logo{filter:brightness(0) invert(1)}
+[data-theme="dark"] .brand-emblem{background:transparent!important}
+@media(max-width:520px){.topbar-brand{gap:5px}.topbar-brand .theme-brand-logo{width:21px;height:21px}.topbar-brand strong{font-size:12px}}
