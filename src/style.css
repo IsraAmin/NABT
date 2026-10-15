@@ -94,3 +94,10 @@
 .home-session span,.home-session time{color:var(--muted);font-size:10px}
 [data-theme="dark"] .empty-state,[data-theme="dark"] .home-session>svg{color:var(--primary)}
 @media(max-width:520px){.home-sessions{padding:3px 14px}.home-session{gap:10px}.section-more{white-space:nowrap;font-size:10px}}
+
+/* Optional biography field in member profile */
+.bio-field{display:block;margin-top:18px;font-size:11px;font-weight:600;color:#455f50}
+.bio-field textarea{display:block;width:100%;margin-top:7px;min-height:116px;resize:vertical;padding:12px 14px;border:1px solid #dce6de;border-radius:12px;font:inherit;line-height:1.8;background:var(--surface);color:var(--ink)}
+.bio-field textarea:focus{outline:3px solid #d9b676;outline-offset:2px}
+[data-theme="dark"] .bio-field{color:#c8dacf}
+[data-theme="dark"] .bio-field textarea{background:#142119;border-color:#3b5342;color:var(--ink)}
