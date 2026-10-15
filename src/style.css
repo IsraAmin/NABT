@@ -77,3 +77,20 @@
 [data-theme="dark"] .profile-photo{background:#243b2b}
 [data-theme="dark"] .admin-view>.stats .card{background:var(--surface)}
 @media(max-width:850px){.profile-avatar-row{gap:13px}.profile-photo{width:84px;height:84px}.admin-actions button{flex:1;justify-content:center}}
+
+/* Dedicated landing page */
+.home-content{display:grid;gap:22px}
+.home-section{min-width:0}
+.section-more{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--primary);text-decoration:none}
+.empty-state{min-height:170px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:5px;color:var(--primary)}
+.empty-state h3{font-size:14px;margin:8px 0 0}
+.empty-state p{font-size:11px;color:var(--muted);margin:0}
+.home-sessions{padding:4px 20px}
+.home-session{display:flex;align-items:center;gap:15px;min-height:68px;padding:12px 0;border-bottom:1px solid var(--line)}
+.home-session:last-child{border-bottom:0}
+.home-session>svg{color:var(--primary);flex-shrink:0}
+.home-session>div{display:grid;gap:1px;flex:1;min-width:0}
+.home-session strong{font-size:12px;font-weight:700}
+.home-session span,.home-session time{color:var(--muted);font-size:10px}
+[data-theme="dark"] .empty-state,[data-theme="dark"] .home-session>svg{color:var(--primary)}
+@media(max-width:520px){.home-sessions{padding:3px 14px}.home-session{gap:10px}.section-more{white-space:nowrap;font-size:10px}}
