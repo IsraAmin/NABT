@@ -433,3 +433,9 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 @media(max-width:800px){
  .home-content .book-grid{max-width:none;grid-template-columns:minmax(0,1fr);gap:16px}
 }
+
+/* Actual supplied student drawing; maintain good image spacing on all devices. */
+.welcome .growth-art{display:flex;align-items:center;justify-content:center;overflow:visible;pointer-events:none}
+.welcome .hero-student-illustration{width:min(100%,230px);height:auto;max-height:175px;object-fit:contain;display:block}
+@media(max-width:800px){.welcome .hero-student-illustration{width:100%;max-width:148px;max-height:155px}}
+@media(max-width:380px){.welcome .hero-student-illustration{max-width:112px;max-height:130px}}
