@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&family=Cairo:wght@400;600;700&display=swap');
-:root{font-family:Alexandria,Cairo,Tahoma,sans-serif;font-synthesis:none;color:#23382e;background:#f7f8f5;--primary:#176944;--primary-deep:#114c36;--ink:#20362d;--muted:#75867c;--line:#e7ece7;--canvas:#f7f8f5;--surface:#fff;--gold:#c1a266}
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
+:root{font-family:"Cairo",Tahoma,Arial,sans-serif;font-synthesis:none;color:#23382e;background:#f7f8f5;--primary:#176944;--primary-deep:#114c36;--ink:#20362d;--muted:#75867c;--line:#e7ece7;--canvas:#f7f8f5;--surface:#fff;--gold:#c1a266}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-width:320px;font-size:13px;line-height:1.8}button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.52;cursor:not-allowed}a{color:inherit}h1,h2,h3,p{margin-top:0}h1,h2,h3{line-height:1.5;color:var(--ink)}h2{font-size:20px;font-weight:700}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #d9b676;outline-offset:3px}
 .layout{min-height:100dvh;display:grid;grid-template-columns:254px minmax(0,1fr);direction:rtl}
 .sidebar{background:#fff;border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:100dvh;position:sticky;top:0;height:100dvh;padding:29px 16px 18px;z-index:50}
@@ -208,3 +208,12 @@
 [data-theme="dark"] .user-enable{background:#254a37;color:#b8edc8}
 @media(max-width:1180px){.user-list{grid-template-columns:1fr}}
 @media(max-width:540px){.user-entry{padding:14px}.user-card-controls{flex-direction:column;align-items:stretch}.user-card-controls label,.user-card-controls button{width:100%}.users-overview>span{flex:1;justify-content:space-between}}
+
+/* Consistent type across laptop, tablet and mobile; eliminate browser fallbacks */
+html,body,#root,.layout,.main,.sidebar,button,input,textarea,select,option{
+  font-family:"Cairo",Tahoma,Arial,sans-serif!important;
+}
+h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
+  font-family:inherit;
+}
+.welcome h1{font-weight:700;letter-spacing:0}
