@@ -461,3 +461,8 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .compensation-form small{display:block;color:var(--muted);margin-top:7px}
 [data-theme="dark"] .session-state,[data-theme="dark"] .session-result{background:#244a34;color:#b6ebc5}
 @media(max-width:800px){.schedule-grid{grid-template-columns:minmax(0,1fr)}.schedule-card{padding:17px}}
+
+/* Editable description on admin session form and members' session cards */
+.session-description-input{display:block;margin:16px 0 20px;color:var(--ink);font-weight:700;font-size:12px}
+.session-description-input textarea{display:block;width:100%;min-height:106px;margin-top:8px;padding:13px 15px;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--ink);font:inherit;resize:vertical;line-height:1.9}
+.session-description{white-space:pre-wrap;overflow-wrap:anywhere;line-height:2!important;color:var(--ink)!important;border-top:1px solid var(--line);padding-top:12px;margin-top:3px!important}
