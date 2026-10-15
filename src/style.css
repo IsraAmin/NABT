@@ -371,3 +371,26 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
  .home-content .book-grid .book>.book-title{font-size:11px}
  .mobile-bottom-nav{padding-inline:5px}
 }
+
+/* Phone only: illustrated outlined welcome and one book per row */
+@media(max-width:800px){
+ .welcome{background:var(--surface);color:var(--ink);border:1.5px solid #91b9a0;box-shadow:0 4px 17px #153f2810;min-height:165px;padding:23px 21px}
+ .welcome h1{color:var(--ink);font-size:21px}
+ .welcome p{color:var(--muted);font-size:11px;max-width:64%}
+ .welcome .eyebrow{color:var(--primary)}
+ .welcome .growth-art{opacity:1;transform:none;left:5px;top:0;width:38%;height:100%;color:#77a88a;display:grid;place-items:center}
+ .welcome .growth-art .growth-circle{border:1px solid #e5efe8;width:125px;height:125px}
+ .welcome .growth-art svg{width:85px;height:85px;stroke-width:1.35}
+ .home-content .book-grid{grid-template-columns:minmax(0,1fr);gap:16px}
+ .home-content .book-grid .book{padding:16px;border-radius:18px}
+ .home-content .book-grid .book>.book-cover{aspect-ratio:4/3;max-height:300px}
+ .home-content .book-grid .book>.book-title{font-size:15px;line-height:1.8}
+ .home-content .book-grid .book>.book-description{font-size:12px;-webkit-line-clamp:3}
+ .home-content .book-grid .book>p:not(.book-description){font-size:11px}
+ .home-content .book-grid .book>.drive-link{font-size:11px}
+ [data-theme="dark"] .welcome{background:var(--surface);border-color:#4d7960;color:var(--ink)}
+ [data-theme="dark"] .welcome h1{color:var(--ink)}
+ [data-theme="dark"] .welcome p{color:var(--muted)}
+ [data-theme="dark"] .welcome .growth-art{color:#78b38c}
+}
+@media(max-width:380px){.welcome{padding:20px 16px}.welcome .growth-art{left:1px;width:36%}.welcome .growth-art svg{width:70px;height:70px}.home-content .book-grid .book{padding:14px}}
