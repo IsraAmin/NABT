@@ -32,3 +32,28 @@ jobs:
           path: dist
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  verify-live-site:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify public GitHub Pages serves the built React assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="https://israamin.github.io/NABT/?verify=${GITHUB_SHA}"
+          for attempt in {1..12}; do
+            curl -fsSL --max-time 15 -H 'Cache-Control: no-cache' "$URL" -o /tmp/nabt-live.html || true
+            if grep -Eq 'src="/NABT/assets/[^"]+\.js"' /tmp/nabt-live.html 2>/dev/null; then
+              echo "Published page references compiled Vite assets."
+              ASSET=$(grep -oE 'src="/NABT/assets/[^"]+\.js"' /tmp/nabt-live.html | head -1 | cut -d'"' -f2)
+              curl -fIsS --max-time 15 "https://israamin.github.io${ASSET}" >/dev/null
+              echo "Public JS asset available: ${ASSET}"
+              exit 0
+            fi
+            echo "Attempt ${attempt}: published HTML has not updated to compiled assets yet"
+            sleep 10
+          done
+          echo "::error::Live page is not referencing the built Vite JS. Check GitHub Pages Source and deployed content."
+          head -c 1200 /tmp/nabt-live.html || true
+          exit 1
