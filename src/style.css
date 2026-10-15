@@ -113,3 +113,22 @@
 .book-description-field textarea{width:100%;resize:vertical;min-height:92px;border:1px solid #dce6de;border-radius:10px;padding:12px;font:inherit;background:var(--surface);color:var(--ink);display:block;margin-top:7px}
 [data-theme="dark"] .book .book-cover{background:linear-gradient(135deg,#294a39,#1b382b)}
 [data-theme="dark"] .book-description-field textarea{background:#142119;border-color:#3b5342}
+
+/* Edit/delete controls and confirmation dialog */
+.item-actions,.editor-actions{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:13px}
+.item-actions button,.editor-actions button{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:10px;padding:8px 12px;font-size:11px;font-weight:700;border:1px solid transparent;min-height:38px}
+.action-edit{background:#e7f4eb;color:#11643f;border-color:#cde6d5!important}
+.action-delete,.confirm-danger{background:#bd3535;color:#fff}
+.action-neutral{background:var(--surface)!important;color:var(--ink)!important;border:1px solid var(--line)!important}
+.confirm-backdrop{position:fixed;inset:0;background:#061a13a8;display:grid;place-items:center;z-index:999;padding:18px}
+.confirm-dialog{width:min(440px,100%);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:22px;padding:28px;box-shadow:0 20px 70px #0004;text-align:center}
+.confirm-dialog h2{font-size:20px;margin:15px 0 8px}
+.confirm-dialog p{font-size:12px;line-height:2;color:var(--muted);margin:0 0 23px}
+.confirm-icon{margin:auto;width:55px;height:55px;border-radius:17px;background:#fce6e5;color:#c03939;display:grid;place-items:center}
+.confirm-actions{display:flex;justify-content:center;gap:10px}
+.confirm-actions button{min-height:43px;padding:10px 18px;border:0;border-radius:10px;font:inherit;font-size:12px;font-weight:700}
+.confirm-logout{background:var(--primary);color:#fff}
+[data-theme="dark"] .action-edit{background:#244b36;color:#b2efc8;border-color:#3a7250!important}
+[data-theme="dark"] .action-delete,[data-theme="dark"] .confirm-danger{background:#b93939;color:#fff}
+[data-theme="dark"] .confirm-icon{background:#4b2828;color:#ffb7b7}
+@media(max-width:540px){.confirm-dialog{padding:22px 18px}.item-actions button{flex:1}.editor-actions button{flex:1}}
