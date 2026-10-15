@@ -290,3 +290,41 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 [data-theme="dark"] .pwa-banner>img{filter:brightness(0) invert(1)}
 @media(min-width:801px){.pwa-banner{display:none}}
 @media(max-width:360px){.pwa-banner{inset:auto 10px 10px;padding:12px}.pwa-banner>img{width:36px;height:36px}}
+
+/* NABT profile — clear, editorial layout inspired by the supplied reference */
+.profile-page{max-width:950px;margin:0 auto 30px;display:grid;gap:22px}
+.profile-hero-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:23px;text-align:center;overflow:hidden;padding:0 25px 29px;box-shadow:0 8px 32px #102e2110}
+.profile-cover{height:110px;background:linear-gradient(120deg,#10543a,#559671);margin:0 -25px}
+.profile-main-avatar{height:118px;width:118px;margin:-59px auto 14px;border:5px solid var(--surface);border-radius:50%;overflow:hidden;background:#e7f1e7;color:var(--primary);display:grid;place-items:center;position:relative}
+.profile-main-avatar img,.profile-edit-photo .profile-photo img{width:100%;height:100%;object-fit:cover}
+.profile-hero-card h1{font-size:23px;margin:0 0 3px;line-height:1.6}
+.profile-role{font-size:12px;color:var(--muted);margin:0 0 21px}
+.profile-stat-row{display:grid;grid-template-columns:repeat(3,1fr);max-width:600px;margin:0 auto 23px;border-block:1px solid var(--line);padding:16px 0}
+.profile-stat-row>div{display:flex;flex-direction:column;gap:2px;padding:0 6px}
+.profile-stat-row>div+div{border-right:1px solid var(--line)}
+.profile-stat-row strong{font-size:23px;color:var(--ink);line-height:1.6}
+.profile-stat-row span{font-size:11px;color:var(--muted)}
+.profile-edit-trigger{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:10px 24px;border-radius:12px;border:1px solid #cce6d5;background:#e7f4ed;color:#176343;font-weight:700}
+.profile-about{background:var(--surface);border:1px solid var(--line);border-radius:23px;padding:27px 31px}
+.profile-info-section+.profile-info-section{border-top:1px solid var(--line);padding-top:24px;margin-top:24px}
+.profile-info-section h2{font-size:17px;font-weight:700;margin-bottom:12px}
+.profile-info-section>p{font-size:12px;line-height:2.1;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
+.profile-info-section dl{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0}
+.profile-info-section dl>div{background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:14px}
+.profile-info-section dt{font-size:10px;color:var(--muted)}
+.profile-info-section dd{font-size:12px;margin:5px 0 0;color:var(--ink);font-weight:700;overflow-wrap:anywhere}
+.profile-achievement{display:flex;justify-content:space-between;align-items:center;padding:11px 0;font-size:12px}
+.profile-achievement+.profile-achievement{border-top:1px solid var(--line)}
+.profile-achievement strong{font-size:17px;color:var(--primary)}
+.profile-edit-panel{background:var(--surface);border:1px solid var(--line);border-radius:23px;padding:30px;box-shadow:0 8px 32px #102e2110}
+.profile-edit-photo{display:flex;flex-direction:column;align-items:center;gap:8px;margin:4px 0 27px}
+.profile-edit-photo .profile-photo{border-radius:50%;height:106px;width:106px}
+.profile-edit-fields{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+.profile-edit-fields label{display:block;font-size:11px;color:var(--ink);font-weight:700}
+.profile-edit-fields input,.profile-edit-fields textarea{display:block;margin-top:7px;width:100%;min-width:0;min-height:48px;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit}
+.profile-edit-fields textarea{resize:vertical;min-height:118px}
+.profile-bio-input{grid-column:1/-1}
+.profile-edit-panel .save-profile{width:100%;min-height:49px;margin-top:26px;border-radius:12px}
+[data-theme="dark"] .profile-main-avatar{background:#244330;color:#bcecc9}
+[data-theme="dark"] .profile-edit-trigger{background:#284a35;border-color:#467458;color:#c9f2d5}
+@media(max-width:650px){.profile-page{gap:14px}.profile-hero-card{padding:0 16px 22px}.profile-cover{margin:0 -16px;height:94px}.profile-main-avatar{width:104px;height:104px;margin-top:-52px}.profile-hero-card h1{font-size:20px}.profile-stat-row strong{font-size:20px}.profile-stat-row span{font-size:10px}.profile-about,.profile-edit-panel{padding:20px 17px}.profile-info-section dl,.profile-edit-fields{grid-template-columns:1fr}.profile-bio-input{grid-column:auto}}
