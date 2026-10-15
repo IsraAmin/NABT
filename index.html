@@ -13,7 +13,7 @@
   }
   window.addEventListener('error',function(e){fail(e.message||'Resource error')});
   window.addEventListener('unhandledrejection',function(e){fail((e.reason&&e.reason.message)||String(e.reason))});
-  window.addEventListener('load',function(){setTimeout(function(){if(document.querySelector('#boot'))fail('Application bundle did not mount. Check browser Network/Console.');},7000)});
+  window.addEventListener('load',function(){setTimeout(function(){if(document.querySelector('#boot'))fail('تأخر تحميل التطبيق على هذا المتصفح. افتحي الرابط مباشرة في Chrome أو جرّبي إعادة التحميل.');},25000)});
   if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){if(r.scope.indexOf('/NABT/')!==-1)r.unregister()})}).catch(function(){})}
  })();
  </script>
