@@ -328,3 +328,46 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 [data-theme="dark"] .profile-main-avatar{background:#244330;color:#bcecc9}
 [data-theme="dark"] .profile-edit-trigger{background:#284a35;border-color:#467458;color:#c9f2d5}
 @media(max-width:650px){.profile-page{gap:14px}.profile-hero-card{padding:0 16px 22px}.profile-cover{margin:0 -16px;height:94px}.profile-main-avatar{width:104px;height:104px;margin-top:-52px}.profile-hero-card h1{font-size:20px}.profile-stat-row strong{font-size:20px}.profile-stat-row span{font-size:10px}.profile-about,.profile-edit-panel{padding:20px 17px}.profile-info-section dl,.profile-edit-fields{grid-template-columns:1fr}.profile-bio-input{grid-column:auto}}
+
+/* Mobile-first NABT dashboard — desktop shell remains unchanged */
+.mobile-bottom-nav{display:none}
+@media(max-width:800px){
+ .layout{background:var(--canvas);min-height:100dvh}
+ .main{padding:0 17px calc(100px + env(safe-area-inset-bottom,0px))}
+ .topbar{height:67px;background:var(--surface);border-bottom:1px solid var(--line);padding:0 17px;margin:0 -17px 20px}
+ .topbar-brand .crumb{display:none}
+ .topbar-brand strong{font-size:16px}
+ .topbar-brand .theme-brand-logo{height:30px;width:30px}
+ .welcome{min-height:178px;margin-bottom:25px;padding:25px 23px;border-radius:20px;box-shadow:0 10px 25px #17533e19}
+ .welcome h1{font-size:clamp(21px,5vw,27px);line-height:1.55;margin:7px 0}
+ .welcome p{font-size:11px;max-width:270px}
+ .welcome .eyebrow{font-size:10px}
+ .growth-art{left:-56px;opacity:.17;transform:scale(.65)}
+ .home-section .section-head{align-items:center;margin-bottom:15px}
+ .home-section .section-head h2{font-size:18px}
+ .home-section .section-more{font-size:11px}
+ .home-content .book-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .home-content .book-grid .book{padding:11px;border-radius:16px;box-shadow:0 5px 18px #214b3110}
+ .home-content .book-grid .book>.book-cover{min-height:0;max-height:none;height:auto;aspect-ratio:4/4.3;border-radius:11px}
+ .home-content .book-grid .book>.book-card-status{margin:11px 0 7px}
+ .home-content .book-grid .book>.book-title{font-size:12px;line-height:1.65;margin:0 0 6px}
+ .home-content .book-grid .book>.book-description{font-size:10px;line-height:1.65;-webkit-line-clamp:2;margin:0 0 8px}
+ .home-content .book-grid .book>p:not(.book-description){font-size:10px;margin:0 0 10px}
+ .home-content .book-grid .book>.drive-link{font-size:10px;padding-top:7px}
+ .home-content .book-status{font-size:9px;padding:4px 8px}
+ .mobile-bottom-nav{position:fixed;z-index:48;display:flex;justify-content:space-around;align-items:stretch;gap:2px;bottom:0;inset-inline:0;padding:9px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -7px 25px #081d1612}
+ .mobile-bottom-nav a{display:flex;min-width:0;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:var(--muted);min-height:52px;border-radius:13px;font-size:9px;font-weight:700}
+ .mobile-bottom-nav a.active{color:var(--primary);background:#e8f4ec}
+ [data-theme="dark"] .mobile-bottom-nav a.active{background:#274a36;color:#b8eccb}
+ .menu-toggle{display:none}
+ .pwa-banner{bottom:calc(85px + env(safe-area-inset-bottom,0px))}
+}
+@media(max-width:380px){
+ .main{padding-inline:12px}
+ .topbar{padding-inline:12px;margin-inline:-12px}
+ .welcome{padding:21px 17px}
+ .home-content .book-grid{gap:8px}
+ .home-content .book-grid .book{padding:9px}
+ .home-content .book-grid .book>.book-title{font-size:11px}
+ .mobile-bottom-nav{padding-inline:5px}
+}
