@@ -276,3 +276,17 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .login-card .brand-symbol{background:transparent!important;width:94px;height:94px;padding:4px;border-radius:0}
 .login-card .brand-symbol img.theme-brand-logo{width:100%;height:100%;object-fit:contain;border-radius:0}
 [data-theme="dark"] .login-card .brand-symbol{background:transparent!important}
+
+/* Mobile PWA installation invitation */
+.pwa-banner{position:fixed;z-index:110;inset:auto 16px 16px;max-width:440px;margin-inline:auto;padding:16px;display:flex;align-items:flex-start;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:19px;box-shadow:0 15px 55px #081d1640;direction:rtl;color:var(--ink)}
+.pwa-banner>img{width:49px;height:49px;object-fit:contain;flex-shrink:0}
+.pwa-banner>div{min-width:0;flex:1}
+.pwa-banner strong{font-size:13px;display:block;line-height:1.7}
+.pwa-banner p{font-size:11px;color:var(--muted);margin:4px 0 11px;line-height:1.8}
+.pwa-buttons{display:flex;align-items:center;gap:8px}
+.pwa-buttons button{border-radius:10px;min-height:38px;padding:8px 14px;font-size:11px;font-weight:700;border:1px solid var(--line)}
+.pwa-install{background:#146b43;color:#fff;border-color:#146b43!important}
+.pwa-later{background:var(--canvas);color:var(--ink)}
+[data-theme="dark"] .pwa-banner>img{filter:brightness(0) invert(1)}
+@media(min-width:801px){.pwa-banner{display:none}}
+@media(max-width:360px){.pwa-banner{inset:auto 10px 10px;padding:12px}.pwa-banner>img{width:36px;height:36px}}
