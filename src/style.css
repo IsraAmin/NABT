@@ -394,3 +394,7 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
  [data-theme="dark"] .welcome .growth-art{color:#78b38c}
 }
 @media(max-width:380px){.welcome{padding:20px 16px}.welcome .growth-art{left:1px;width:36%}.welcome .growth-art svg{width:70px;height:70px}.home-content .book-grid .book{padding:14px}}
+
+/* Book art appears only in the phone-sized greeting */
+.mobile-book-icon{display:none}
+@media(max-width:800px){.growth-art .desktop-growth-icon{display:none}.growth-art .mobile-book-icon{display:block}}
