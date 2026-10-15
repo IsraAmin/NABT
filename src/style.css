@@ -421,3 +421,15 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 [data-theme="dark"] .welcome .growth-art{color:#78b38c}
 @media(max-width:800px){.welcome{padding:23px 21px;min-height:165px}.welcome h1{font-size:21px}.welcome p{font-size:11px}.welcome .growth-art{left:5px;width:38%}.welcome .growth-art .mobile-book-icon{width:85px;height:85px}.home-content .book-grid{max-width:none;gap:16px}.home-content .book-grid .book{padding:16px}.home-content .book-grid .book>.book-title{font-size:15px}}
 @media(max-width:380px){.welcome{padding:20px 16px}.welcome .growth-art{left:1px;width:36%}.welcome .growth-art .mobile-book-icon{width:70px;height:70px}.home-content .book-grid .book{padding:14px}}
+
+/* Final responsive home-book grid — three laptop cards, one phone card */
+@media(min-width:1101px){
+ .home-content .book-grid{max-width:none;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+ .home-content .book-grid .book{min-width:0}
+}
+@media(min-width:801px) and (max-width:1100px){
+ .home-content .book-grid{max-width:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+}
+@media(max-width:800px){
+ .home-content .book-grid{max-width:none;grid-template-columns:minmax(0,1fr);gap:16px}
+}
