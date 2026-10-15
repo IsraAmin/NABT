@@ -132,3 +132,39 @@
 [data-theme="dark"] .action-delete,[data-theme="dark"] .confirm-danger{background:#b93939;color:#fff}
 [data-theme="dark"] .confirm-icon{background:#4b2828;color:#ffb7b7}
 @media(max-width:540px){.confirm-dialog{padding:22px 18px}.item-actions button{flex:1}.editor-actions button{flex:1}}
+
+/* Attendance design refinement — consistent responsive surfaces and controls */
+#record.card{padding:clamp(22px,3vw,34px);border:1px solid var(--line);box-shadow:0 12px 42px #173d2310}
+#record .section-head{margin-bottom:26px}
+#record .section-head h2{font-size:clamp(20px,2vw,26px);letter-spacing:-.02em}
+#record .fields{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+#record .fields label{font-weight:700;display:block}
+#record .fields input,#record .fields select{height:48px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 15px}
+.attendance-intro{margin:28px 0 14px;padding:20px;border:1px solid var(--line);background:var(--canvas);border-radius:16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:center}
+.attendance-intro>strong{font-size:15px;color:var(--ink)}
+.attendance-intro>p{grid-column:1/-1;margin:0;color:var(--muted);font-size:11px}
+.attendance-intro>input{grid-column:1/-1;height:46px;background:var(--surface);border-radius:11px;padding:10px 15px}
+.attendance-intro>span{grid-column:1/-1;font-size:11px;color:var(--primary);font-weight:700}
+#record .roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:12px;margin:0 0 24px}
+#record .member-row.check-member{border:1px solid var(--line);background:var(--surface);border-radius:14px;min-height:70px;padding:15px 17px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-direction:row;cursor:pointer;margin:0;transition:border-color .15s,background .15s}
+#record .check-member:has(input:checked){background:#e8f5ec;border-color:#8cc4a0}
+#record .check-member-name{font-weight:700;font-size:12px;color:var(--ink);display:flex;flex-direction:column;gap:1px;overflow-wrap:anywhere}
+#record .check-member-name small{font-size:10px;color:var(--muted);font-weight:400}
+#record .check-member input[type=checkbox]{width:21px;height:21px;accent-color:#187248;flex:none;margin:0}
+#record .editor-actions{margin-top:22px}
+#record .editor-actions>button:first-child{background:#156d46;color:#fff;min-height:46px;padding:11px 26px}
+#history.card{padding:clamp(22px,3vw,34px)}
+#history .table-wrap{border:1px solid var(--line);border-radius:13px;overflow-x:auto}
+#history th{font-size:11px}
+#history td{vertical-align:middle}
+.item-actions{display:flex;flex-direction:row;align-items:center;gap:8px;flex-wrap:nowrap}
+.item-actions button{flex:0 0 auto;min-width:76px;white-space:nowrap;min-height:38px}
+.book .item-actions{margin-top:auto;padding-top:15px;width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.book .item-actions button{min-width:0;width:100%}
+.action-edit{background:#e7f4ed!important;color:#176343!important;border-color:#bee1cb!important}
+.action-delete{background:#c43d3d!important;color:#fff!important;border:1px solid #c43d3d!important}
+[data-theme="dark"] #record .check-member:has(input:checked){background:#264935;border-color:#51996e}
+[data-theme="dark"] .action-edit{background:#254633!important;color:#c5efd3!important;border-color:#487256!important}
+[data-theme="dark"] .action-delete{background:#b53b3b!important;border-color:#b53b3b!important}
+@media(max-width:900px){#record .fields{grid-template-columns:1fr 1fr}#record .fields label:last-child{grid-column:1/-1}}
+@media(max-width:580px){#record.card,#history.card{padding:17px}#record .fields{grid-template-columns:1fr;gap:10px}#record .fields label:last-child{grid-column:auto}#record .roster{grid-template-columns:1fr}#history .item-actions{flex-wrap:nowrap}#history .item-actions button{min-width:68px;padding:8px 10px}}
