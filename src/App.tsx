@@ -14,6 +14,8 @@ const statusLabel=(s:string)=>({planned:'مخطط لها',in_progress:'قيد ا
 export default function App(){
  useEffect(()=>{document.getElementById('boot')?.remove();},[]);
  const [menuOpen,setMenuOpen]=useState(false);
+ const [,refreshClock]=useState(0);
+ useEffect(()=>{const id=window.setInterval(()=>refreshClock(v=>v+1),30000);return()=>window.clearInterval(id);},[]);
  const [installEvent,setInstallEvent]=useState<Event|null>(null);
  const [showInstall,setShowInstall]=useState(()=>{try{return !sessionStorage.getItem('nabt-install-dismissed')}catch{return true}});
  const [installInstructions,setInstallInstructions]=useState(false);
