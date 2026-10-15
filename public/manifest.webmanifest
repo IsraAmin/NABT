@@ -1,0 +1,33 @@
+{
+  "name": "نبت",
+  "short_name": "نبت",
+  "description": "منصة نبت للمعرفة والحضور والكتب",
+  "id": "/NABT/",
+  "start_url": "/NABT/#home",
+  "scope": "/NABT/",
+  "display": "standalone",
+  "background_color": "#f7f8f5",
+  "theme_color": "#105a3c",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    {
+      "src": "/NABT/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/NABT/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/NABT/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
