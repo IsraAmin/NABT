@@ -22,14 +22,6 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-audit --no-fund
-      - name: Fix historical conditional markup for build
-        run: python3 - <<'PY'
-          from pathlib import Path
-          p=Path('src/App.tsx')
-          s=p.read_text()
-          s=s.replace('}<section id="history"', '}{(view === "admin" || view === "attendance") && <section id="history"')
-          p.write_text(s)
-          PY
       - run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://cieyyciklonkmeadgnzq.supabase.co' }}
