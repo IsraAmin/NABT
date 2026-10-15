@@ -53,7 +53,7 @@ export default function App(){
  setSaving(true);setNotice('');
  const existing=sessions.find(s=>s.session_date===date&&s.study_type===studyType&&s.book_id===(bookId||null));
  if(existing&&!editingSessionId){setNotice('الجلسة موجودة مسبقًا. افتحيها من السجلات لتعديلها.');setSaving(false);return;}
- if(editingSessionId){const rows=activeMembers.map(m=>({session_id:editingSessionId,member_id:m.id,status:selected[m.id],marked_by:uid}));const {error}=await supabase.from('attendance').upsert(rows,{onConflict:'session_id,member_id'});setNotice(error?'تعذر تعديل الحضور: '+error.message:'تم حفظ تعديل الحضور');if(!error){setEditingSessionId(null);setSelected({});await reload();}setSaving(false);return;}
+ if(editingSessionId){const {error:sessionError}=await supabase.from('sessions').update({session_date:date,study_type:studyType,book_id:bookId||null}).eq('id',editingSessionId);if(sessionError){setNotice('تعذر تعديل بيانات الجلسة: '+sessionError.message);setSaving(false);return;}const rows=activeMembers.map(m=>({session_id:editingSessionId,member_id:m.id,status:selected[m.id],marked_by:uid}));const {error}=await supabase.from('attendance').upsert(rows,{onConflict:'session_id,member_id'});setNotice(error?'تعذر تعديل الحضور: '+error.message:'تم حفظ تعديل الحضور');if(!error){setEditingSessionId(null);setSelected({});await reload();}setSaving(false);return;}
  const {data:session,error}=await supabase.from('sessions').insert({session_date:date,study_type:studyType,book_id:bookId||null,created_by:uid}).select('id').single();
  if(error||!session){setNotice('تعذر إنشاء الجلسة: '+(error?.message||''));setSaving(false);return;}
  const rows=activeMembers.map(m=>({session_id:session.id,member_id:m.id,status:selected[m.id],marked_by:uid}));
