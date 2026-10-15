@@ -1,1 +1,22 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#07662c"/><title>نَبْت | منصة المعرفة والحضور</title></head><body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body></html>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+ <meta charset="UTF-8"/>
+ <meta name="viewport" content="width=device-width, initial-scale=1"/>
+ <meta name="theme-color" content="#086b34"/>
+ <title>نَبْت | منصة المعرفة والحضور</title>
+ <style>body{margin:0;background:#faf9f4;font-family:Tahoma,Arial,sans-serif;color:#126235}#boot{max-width:550px;margin:15vh auto;padding:32px;text-align:center}#boot h1{font-size:2rem}#boot p{line-height:1.8}.error{background:#fff3ea;border:1px solid #eed2c5;border-radius:12px;padding:16px;overflow-wrap:anywhere}</style>
+ <script>
+ (function(){
+  function fail(text){var e=document.getElementById('root');if(!e)return;
+   if(e.querySelector('#boot'))e.innerHTML='<div id="boot" class="error"><h1>تعذر تشغيل نَبْت</h1><p>حدث خطأ في تحميل التطبيق. يرجى تحديث الصفحة، وإذا استمر الخطأ أرسلي صورة هذه الرسالة.</p><pre style="white-space:pre-wrap;text-align:left;direction:ltr">'+String(text).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})+'</pre></div>';
+  }
+  window.addEventListener('error',function(e){fail(e.message||'Resource error')});
+  window.addEventListener('unhandledrejection',function(e){fail((e.reason&&e.reason.message)||String(e.reason))});
+  window.addEventListener('load',function(){setTimeout(function(){if(document.querySelector('#boot'))fail('Application bundle did not mount. Check browser Network/Console.');},7000)});
+  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){if(r.scope.indexOf('/NABT/')!==-1)r.unregister()})}).catch(function(){})}
+ })();
+ </script>
+</head>
+<body><div id="root"><div id="boot"><h1>🌱 نَبْت</h1><p>جارٍ تحميل المنصة...</p></div></div><script type="module" src="/src/main.tsx"></script></body>
+</html>
