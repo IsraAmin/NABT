@@ -606,3 +606,17 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .welcome .hero-student-illustration{width:min(100%,230px);max-height:175px;height:auto;object-fit:contain;object-position:center;filter:drop-shadow(0 8px 10px rgba(14,78,35,.08))}
 @media(max-width:800px){.welcome .hero-student-illustration{max-width:148px;max-height:150px;object-fit:contain}}
 @media(max-width:380px){.welcome .hero-student-illustration{max-width:112px;max-height:125px}}
+
+.admin-compensations{margin-top:18px}
+.admin-compensations .section-head p{font-size:11px;color:var(--muted)}
+.compensation-count{padding:7px 12px;border-radius:20px;background:#e6f3e9;color:#276b43;font-size:11px;font-weight:800;white-space:nowrap}
+.compensation-list{display:grid;gap:12px;margin-top:14px}
+.compensation-entry{border:1px solid var(--line);border-radius:14px;padding:15px;background:var(--surface)}
+.compensation-entry-main{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.compensation-entry-main>div{min-width:0;display:grid;gap:5px}
+.compensation-entry-main strong{font-size:13px;color:var(--ink)}
+.compensation-entry-main small{font-size:11px;color:var(--muted)}
+.compensation-entry-main button{white-space:nowrap;padding:9px 12px;border:1px solid var(--line);background:var(--canvas);border-radius:9px;color:var(--primary);cursor:pointer;font:inherit;font-size:11px;font-weight:800}
+.compensation-full-text{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:14px;padding:15px;border-radius:11px;border:1px solid var(--line);background:var(--canvas);line-height:2;font-size:12px;color:var(--ink)}
+.compensation-empty{padding:20px;text-align:center;color:var(--muted);font-size:12px}
+@media(max-width:600px){.compensation-entry-main{align-items:flex-start;flex-wrap:wrap}.compensation-entry-main button{width:100%}}
