@@ -101,3 +101,15 @@
 .bio-field textarea:focus{outline:3px solid #d9b676;outline-offset:2px}
 [data-theme="dark"] .bio-field{color:#c8dacf}
 [data-theme="dark"] .bio-field textarea{background:#142119;border-color:#3b5342;color:var(--ink)}
+
+/* Book cards and editorial descriptions */
+.book{overflow:hidden;display:flex;flex-direction:column;align-items:stretch}
+.book .book-cover{width:100%;height:185px;border-radius:12px;background:linear-gradient(135deg,#e2f0e5,#cfe3d4);display:grid;place-items:center;color:var(--primary);overflow:hidden}
+.book .book-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.book .book-description{font-size:11px;line-height:1.9;color:var(--ink);margin:7px 0 10px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.book h3{margin-top:13px}
+.book .drive-link{margin-top:auto;padding-top:14px}
+.book-description-field{grid-column:1/-1}
+.book-description-field textarea{width:100%;resize:vertical;min-height:92px;border:1px solid #dce6de;border-radius:10px;padding:12px;font:inherit;background:var(--surface);color:var(--ink);display:block;margin-top:7px}
+[data-theme="dark"] .book .book-cover{background:linear-gradient(135deg,#294a39,#1b382b)}
+[data-theme="dark"] .book-description-field textarea{background:#142119;border-color:#3b5342}
