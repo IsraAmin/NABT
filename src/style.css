@@ -251,3 +251,12 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 [data-theme="dark"] .user-card-controls .user-grant{background:#244d35;color:#bdf0cb;border-color:#386e4a}
 [data-theme="dark"] .user-card-controls .user-revoke{background:#453b2a;color:#f3d49a;border-color:#635332}
 @media(max-width:520px){.user-card-controls{display:grid;grid-template-columns:1fr 1fr}.user-card-controls button{width:100%}}
+
+/* Compact homepage welcome */
+.welcome{min-height:185px;padding:27px 38px;margin-bottom:26px;border-radius:20px}
+.welcome h1{font-size:clamp(22px,2.15vw,30px);margin:9px 0 5px;line-height:1.7}
+.welcome p{margin-bottom:0;font-size:12px;line-height:1.9}
+.welcome .eyebrow{font-size:10px}
+.welcome .growth-art{opacity:.65;transform:scale(.7);transform-origin:center}
+@media(max-width:800px){.welcome{min-height:175px;padding:25px;margin-bottom:22px}.welcome h1{font-size:23px}}
+@media(max-width:520px){.welcome{min-height:170px;padding:22px 19px}.welcome h1{font-size:21px}.welcome .growth-art{opacity:.3}}
