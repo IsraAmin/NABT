@@ -569,3 +569,27 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 @media(max-width:370px){
  .schedule-home .schedule-carousel .schedule-card{flex-basis:calc(100% - 8px);width:calc(100% - 8px)}
 }
+
+/* Unified administration hub */
+.admin-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:22px 0 7px}
+.admin-tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:17px 9px;min-height:88px;border:1px solid var(--line);border-radius:15px;background:var(--canvas);color:var(--ink);font-family:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.admin-tabs button.selected{border-color:#48956b;background:#e5f3e9;color:#1b6d42;box-shadow:0 4px 18px #175c3212}
+.member-engagement{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:13px 0;font-size:11px}
+.member-engagement small{color:var(--muted);font-size:10px}
+.engagement-pill{border-radius:99px;padding:7px 12px;font-weight:800;border:1px solid transparent;white-space:nowrap}
+.engagement-pill.green{color:#176a39;background:#e5f4e9;border-color:#bbe0c7}
+.engagement-pill.orange{color:#93590b;background:#fff1d8;border-color:#f2d29b}
+.engagement-pill.red{color:#a13a32;background:#ffe9e6;border-color:#f0bbb3}
+.engagement-pill.neutral{color:var(--muted);background:var(--canvas);border-color:var(--line)}
+.member-session-history{max-height:250px;overflow-y:auto;margin:17px 0;border-top:1px solid var(--line);text-align:start}
+.member-session-history h3{font-size:13px;margin:14px 0}
+.member-session-line{display:flex;justify-content:space-between;gap:13px;border-bottom:1px solid var(--line);padding:10px 0;font-size:11px}
+.member-session-line strong{color:var(--primary);white-space:nowrap}
+.admin-system{display:grid;gap:12px;margin-top:18px}
+.admin-system h2{margin:0}.admin-system p,.admin-system small{line-height:1.9;color:var(--muted);font-size:12px}
+.admin-system button{display:inline-flex;align-items:center;justify-content:center;gap:9px;justify-self:start;border:0;border-radius:12px;padding:12px 20px;background:var(--primary);color:#fff;font-family:inherit;font-weight:800}
+[data-theme="dark"] .admin-tabs button.selected{background:#294c35;color:#bcecca}
+[data-theme="dark"] .engagement-pill.green{background:#264736;color:#afe9c1}
+[data-theme="dark"] .engagement-pill.orange{background:#564123;color:#ffe0a6}
+[data-theme="dark"] .engagement-pill.red{background:#552f30;color:#ffb4af}
+@media(max-width:650px){.admin-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-tabs button{min-height:76px;padding:12px 5px;font-size:11px}.member-engagement{flex-wrap:wrap}}
