@@ -22,6 +22,10 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-audit --no-fund
+      - name: Generate PWA icons from Nabt logo
+        run: |
+          python3 -m pip install --quiet --break-system-packages Pillow cairosvg
+          python3 scripts/generate_pwa_icons.py
       - run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://cieyyciklonkmeadgnzq.supabase.co' }}
