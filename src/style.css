@@ -498,3 +498,13 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 /* Mobile logout action beside theme toggle */
 .mobile-header-logout{display:none}
 @media(max-width:800px){.header-actions{display:flex;align-items:center;gap:8px}.mobile-header-logout{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;flex-shrink:0;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--ink);cursor:pointer}.mobile-header-logout:focus-visible{outline:2px solid var(--primary);outline-offset:2px}}
+
+/* Header logout follows the desktop logout visual language */
+@media(max-width:800px){
+ .header-actions .mobile-header-logout{width:auto;min-width:0;height:40px;padding:0 13px;gap:8px;background:#fff1ef;color:#b74c44;border:none;border-radius:11px;font-family:inherit;font-size:11px;font-weight:800;white-space:nowrap;transition:background .2s,transform .2s}
+ .header-actions .mobile-header-logout:hover{background:#ffe5e1}
+ .header-actions .mobile-header-logout:active{transform:scale(.97)}
+ [data-theme="dark"] .header-actions .mobile-header-logout{background:#452b2b;color:#ffc0b9}
+ [data-theme="dark"] .header-actions .mobile-header-logout:hover{background:#563333}
+}
+@media(max-width:360px){.header-actions .mobile-header-logout{padding:0 9px;font-size:10px;gap:5px}}
