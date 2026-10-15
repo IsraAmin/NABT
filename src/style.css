@@ -558,3 +558,14 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 [data-theme="dark"] .schedule-carousel .session-state{background:#274937;color:#bcf0cd}
 @media(max-width:800px){.schedule-home{gap:19px}.schedule-page-heading{padding:19px 17px;align-items:flex-start}.schedule-page-heading h2{font-size:21px}.schedule-page-heading p{font-size:10px}.schedule-total-count{padding:10px;font-size:10px}.schedule-total-count svg{width:16px}.schedule-group{padding:17px 14px 5px;border-radius:18px}.schedule-group-head{align-items:flex-start}.schedule-heading-title{gap:9px}.schedule-group-symbol{width:37px;height:37px;border-radius:11px}.schedule-group-head h3{font-size:15px}.schedule-group-meta{align-items:flex-end;flex-direction:column;gap:4px}.schedule-group-meta>small{font-size:9px}.schedule-carousel .schedule-card{flex-basis:min(78vw,340px);padding:16px}.schedule-hours{font-size:10px}}
 @media(max-width:370px){.schedule-total-count{display:none}.schedule-group-meta>small{display:none}.schedule-carousel .schedule-card{flex-basis:86vw}}
+
+/* Phone schedule cards: fully visible inside the lane, with the existing shadow */
+.schedule-carousel .schedule-card::before{display:none}
+@media(max-width:800px){
+ .schedule-home,.schedule-group,.schedule-home .schedule-carousel{min-width:0;max-width:100%;box-sizing:border-box}
+ .schedule-home .schedule-carousel{padding-inline:2px;padding-bottom:19px;scroll-padding-inline:2px}
+ .schedule-home .schedule-carousel .schedule-card{box-sizing:border-box;flex:0 0 min(100% - 8px,340px);width:min(100% - 8px,340px);min-width:0;max-width:100%;padding:15px;scroll-snap-align:start}
+}
+@media(max-width:370px){
+ .schedule-home .schedule-carousel .schedule-card{flex-basis:calc(100% - 8px);width:calc(100% - 8px)}
+}
