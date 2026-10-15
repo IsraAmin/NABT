@@ -168,3 +168,43 @@
 [data-theme="dark"] .action-delete{background:#b53b3b!important;border-color:#b53b3b!important}
 @media(max-width:900px){#record .fields{grid-template-columns:1fr 1fr}#record .fields label:last-child{grid-column:1/-1}}
 @media(max-width:580px){#record.card,#history.card{padding:17px}#record .fields{grid-template-columns:1fr;gap:10px}#record .fields label:last-child{grid-column:auto}#record .roster{grid-template-columns:1fr}#history .item-actions{flex-wrap:nowrap}#history .item-actions button{min-width:68px;padding:8px 10px}}
+
+/* Featured book states */
+.book .book-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:9px;margin:14px 0 8px}
+.book .book-heading h3{margin:0;flex:1;min-width:0;font-weight:700;line-height:1.7}
+.book-status{display:inline-flex;justify-content:center;align-items:center;width:max-content;flex:none;white-space:nowrap;border-radius:999px;font-size:10px;font-weight:700;padding:5px 10px;border:1px solid transparent;line-height:1.5}
+.book-status.status-planned{background:#f2eee4;color:#80612e;border-color:#e8dabb}
+.book-status.status-in_progress{background:#e7efff;color:#285ab2;border-color:#cadeff}
+.book-status.status-completed{background:#def3e6;color:#136b41;border-color:#bae4ca}
+[data-theme="dark"] .book-status.status-planned{background:#493f2b;color:#f0d298;border-color:#695738}
+[data-theme="dark"] .book-status.status-in_progress{background:#293e60;color:#b8d4ff;border-color:#385780}
+[data-theme="dark"] .book-status.status-completed{background:#234c36;color:#b7f1cb;border-color:#386d4a}
+/* User management cards */
+.user-management{padding-top:29px;margin-top:29px;border-top:1px solid var(--line)}
+.users-overview{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.users-overview>span{border:1px solid var(--line);background:var(--canvas);border-radius:12px;padding:11px 17px;font-size:11px;color:var(--muted);display:flex;gap:13px;align-items:center}
+.users-overview strong{font-size:18px;color:var(--ink)}
+.user-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.user-entry{border:1px solid var(--line);border-radius:17px;background:var(--surface);padding:18px;min-width:0;box-shadow:0 5px 24px #0f302c0a}
+.user-card-top{display:flex;align-items:center;gap:12px;padding-bottom:15px;border-bottom:1px solid var(--line)}
+.user-monogram{width:47px;height:47px;flex:none;border-radius:14px;background:#e7f2ea;color:#176343;display:grid;place-items:center;font-size:19px;font-weight:700}
+.user-entry-name{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.user-entry-name strong{font-weight:700;color:var(--ink);font-size:12px;overflow-wrap:anywhere}
+.user-entry-name small{font-size:10px;color:var(--muted)}
+.user-state{padding:5px 11px;border-radius:99px;font-size:10px;white-space:nowrap;font-weight:700}
+.user-state.active{background:#def3e6;color:#146c43}
+.user-state.inactive{background:#fce4e4;color:#a42b2b}
+.user-card-controls{display:flex;align-items:flex-end;gap:10px;padding-top:15px}
+.user-card-controls label{margin:0;flex:1;min-width:0;font-size:10px;color:var(--muted);font-weight:700}
+.user-card-controls select{min-height:42px}
+.user-card-controls button{flex:none;border-radius:10px;min-height:42px;padding:8px 12px;font-size:10px;font-weight:700;border:1px solid transparent}
+.user-disable{color:#b73333;background:#fceced;border-color:#f0cccc!important}
+.user-enable{color:#126740;background:#e1f4e8;border-color:#bce1ca!important}
+.user-card-controls button:disabled{opacity:.5;cursor:not-allowed}
+[data-theme="dark"] .user-monogram{background:#284c36;color:#c9f1d4}
+[data-theme="dark"] .user-state.active{background:#234a35;color:#b8edc8}
+[data-theme="dark"] .user-state.inactive{background:#4d292b;color:#ffc0c0}
+[data-theme="dark"] .user-disable{background:#492b30;color:#ffbcbc}
+[data-theme="dark"] .user-enable{background:#254a37;color:#b8edc8}
+@media(max-width:1180px){.user-list{grid-template-columns:1fr}}
+@media(max-width:540px){.user-entry{padding:14px}.user-card-controls{flex-direction:column;align-items:stretch}.user-card-controls label,.user-card-controls button{width:100%}.users-overview>span{flex:1;justify-content:space-between}}
