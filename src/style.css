@@ -439,3 +439,25 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .welcome .hero-student-illustration{width:min(100%,230px);height:auto;max-height:175px;object-fit:contain;display:block}
 @media(max-width:800px){.welcome .hero-student-illustration{width:100%;max-width:148px;max-height:155px}}
 @media(max-width:380px){.welcome .hero-student-illustration{max-width:112px;max-height:130px}}
+
+/* Member-driven session timeline */
+.schedule-home{display:grid;gap:18px}
+.schedule-caption{margin:0;color:var(--muted);font-size:12px;line-height:1.9}
+.schedule-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+.schedule-card{padding:22px;background:var(--surface);border:1px solid var(--line);border-radius:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.schedule-card .schedule-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.session-state{display:inline-flex;border-radius:99px;background:#e3efe7;color:#276b47;padding:6px 13px;font-size:11px;font-weight:700}
+.schedule-card time{font-size:11px;color:var(--muted)}
+.schedule-card h3{font-size:17px;margin:0;color:var(--ink)}
+.schedule-card p{font-size:12px;color:var(--muted);margin:0}
+.session-buttons{display:flex;flex-wrap:wrap;gap:9px;margin-top:auto}
+.session-buttons button{border:0;border-radius:11px;padding:11px 16px;min-height:43px;font-weight:700;font-size:11px;background:var(--primary);color:#fff}
+.session-buttons .session-compensate{background:var(--canvas);border:1px solid var(--line);color:var(--ink)}
+.session-result{background:#e4f4e9;color:#1b7044;border-radius:12px;padding:13px;font-size:12px;font-weight:700}
+.session-upcoming{color:var(--muted);font-size:11px;margin-top:auto}
+.compensation-form{border-top:1px solid var(--line);padding-top:14px}
+.compensation-form label{font-size:11px;font-weight:700}
+.compensation-form textarea{width:100%;display:block;margin-top:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--canvas);color:var(--ink);font:inherit;resize:vertical}
+.compensation-form small{display:block;color:var(--muted);margin-top:7px}
+[data-theme="dark"] .session-state,[data-theme="dark"] .session-result{background:#244a34;color:#b6ebc5}
+@media(max-width:800px){.schedule-grid{grid-template-columns:minmax(0,1fr)}.schedule-card{padding:17px}}
