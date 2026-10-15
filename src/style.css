@@ -359,7 +359,7 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
  .mobile-bottom-nav a{display:flex;min-width:0;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:var(--muted);min-height:52px;border-radius:13px;font-size:9px;font-weight:700}
  .mobile-bottom-nav a.active{color:var(--primary);background:#e8f4ec}
  [data-theme="dark"] .mobile-bottom-nav a.active{background:#274a36;color:#b8eccb}
- .menu-toggle{display:none}
+ .menu-toggle{display:grid;width:36px;height:36px;border-radius:10px}
  .pwa-banner{bottom:calc(85px + env(safe-area-inset-bottom,0px))}
 }
 @media(max-width:380px){
