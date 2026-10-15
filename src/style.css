@@ -508,3 +508,13 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
  [data-theme="dark"] .header-actions .mobile-header-logout:hover{background:#563333}
 }
 @media(max-width:360px){.header-actions .mobile-header-logout{padding:0 9px;font-size:10px;gap:5px}}
+
+/* Compact profile loading state, without an error card during authentication */
+.profile-loading-screen{min-height:100dvh;display:grid;place-items:center;padding:24px;background:var(--canvas);color:var(--ink)}
+.nabt-loading{display:flex;align-items:center;flex-direction:column;gap:17px;text-align:center;color:var(--muted);font-size:12px;font-weight:700}
+.nabt-spinner{width:42px;height:42px;display:block;border:3px solid var(--line);border-top-color:var(--primary);border-radius:50%;animation:nabt-spin .8s linear infinite}
+@keyframes nabt-spin{to{transform:rotate(360deg)}}
+.nabt-loading-failed{max-width:410px;text-align:center;color:var(--muted);line-height:2;font-size:13px}
+.nabt-loading-failed button{margin:9px 5px;padding:10px 17px;border-radius:11px;background:var(--primary);color:#fff;border:0;cursor:pointer;font-family:inherit;font-weight:700}
+.nabt-loading-failed .nabt-loading-signout{background:transparent;color:var(--muted);border:1px solid var(--line)}
+@media(prefers-reduced-motion:reduce){.nabt-spinner{animation-duration:2s}}
