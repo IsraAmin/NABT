@@ -491,3 +491,6 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .schedule-carousel .schedule-card{flex:0 0 clamp(255px,31%,350px);scroll-snap-align:start;align-self:stretch}
 .session-table-description{min-width:200px;max-width:320px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;line-height:1.9}
 @media(max-width:800px){.schedule-carousel .schedule-card{flex-basis:min(83vw,345px)}.schedule-group-head h3{font-size:16px}.schedule-group-head p{font-size:10px}}
+
+/* Mobile uses fixed bottom navigation; hide redundant hamburger trigger. */
+@media(max-width:800px){.topbar .menu-toggle{display:none!important}}
