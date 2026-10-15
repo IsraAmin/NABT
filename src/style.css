@@ -271,3 +271,8 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 [data-theme="dark"] .theme-brand-logo{filter:brightness(0) invert(1)}
 [data-theme="dark"] .brand-emblem{background:transparent!important}
 @media(max-width:520px){.topbar-brand{gap:5px}.topbar-brand .theme-brand-logo{width:21px;height:21px}.topbar-brand strong{font-size:12px}}
+
+/* Theme-responsive official logo in authentication screens */
+.login-card .brand-symbol{background:transparent!important;width:94px;height:94px;padding:4px;border-radius:0}
+.login-card .brand-symbol img.theme-brand-logo{width:100%;height:100%;object-fit:contain;border-radius:0}
+[data-theme="dark"] .login-card .brand-symbol{background:transparent!important}
