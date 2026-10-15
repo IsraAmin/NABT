@@ -231,3 +231,23 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .book-grid .book>.item-actions{margin-top:12px}
 [data-theme="dark"] .book-grid .book>.book-card-status{background:none}
 @media(max-width:600px){.book-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:14px}.book-grid .book{padding:15px}}
+
+/* Member administration: clear actions, real avatars and permission confirmations */
+.user-monogram{overflow:hidden}.user-monogram img,.member-details-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.user-card-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;align-items:stretch}
+.user-card-controls button{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:43px;font-size:11px}
+.user-card-controls .user-details-btn{background:var(--canvas);color:var(--ink);border:1px solid var(--line)}
+.user-card-controls .user-grant{background:#e4f3e9;color:#11643e;border:1px solid #c5dfce}
+.user-card-controls .user-revoke{background:#fff2e0;color:#91601c;border:1px solid #efd9b5}
+.user-card-controls .user-disable,.user-card-controls .user-enable{grid-column:1/-1}
+.member-details-dialog{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:28px;width:min(420px,100%);position:relative;text-align:center}
+.details-close{position:absolute;top:14px;left:14px;border:1px solid var(--line);border-radius:10px;background:var(--canvas);color:var(--ink);width:36px;height:36px;display:grid;place-items:center}
+.member-details-avatar{width:82px;height:82px;border-radius:22px;overflow:hidden;margin:0 auto 14px;display:grid;place-items:center;background:#e7f2ea;color:#176343;font-size:27px;font-weight:700}
+.member-details-dialog h2{font-size:19px;margin-bottom:17px}
+.member-details-dialog dl{text-align:right;margin:0 0 25px}
+.member-details-dialog dl div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.member-details-dialog dt{color:var(--muted)}.member-details-dialog dd{margin:0;font-weight:700}
+.member-details-dialog>.action-neutral{border-radius:10px;padding:10px 32px}
+[data-theme="dark"] .user-card-controls .user-grant{background:#244d35;color:#bdf0cb;border-color:#386e4a}
+[data-theme="dark"] .user-card-controls .user-revoke{background:#453b2a;color:#f3d49a;border-color:#635332}
+@media(max-width:520px){.user-card-controls{display:grid;grid-template-columns:1fr 1fr}.user-card-controls button{width:100%}}
