@@ -564,7 +564,7 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 @media(max-width:800px){
  .schedule-home,.schedule-group,.schedule-home .schedule-carousel{min-width:0;max-width:100%;box-sizing:border-box}
  .schedule-home .schedule-carousel{padding-inline:2px;padding-bottom:19px;scroll-padding-inline:2px}
- .schedule-home .schedule-carousel .schedule-card{box-sizing:border-box;flex:0 0 min(100% - 8px,340px);width:min(100% - 8px,340px);min-width:0;max-width:100%;padding:15px;scroll-snap-align:start}
+ .schedule-home .schedule-carousel .schedule-card{box-sizing:border-box;flex:0 0 calc(100% - 8px);width:calc(100% - 8px);min-width:0;max-width:100%;padding:15px;scroll-snap-align:start}
 }
 @media(max-width:370px){
  .schedule-home .schedule-carousel .schedule-card{flex-basis:calc(100% - 8px);width:calc(100% - 8px)}
