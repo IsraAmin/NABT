@@ -13,6 +13,7 @@ const emailError=(message:string)=>/rate limit|email.*limit|over_email_send_rate
 const statusLabel=(s:string)=>({planned:'مخطط لها',in_progress:'قيد الدراسة',completed:'مكتملة'}[s]||s);
 export default function App(){
  useEffect(()=>{document.getElementById('boot')?.remove();},[]);
+ useEffect(()=>{if('serviceWorker' in navigator){void navigator.serviceWorker.register('/NABT/sw.js',{scope:'/NABT/'}).catch(()=>{});}},[]);
  useEffect(()=>{if(!supabase)return;try{const key='nabt-visitor-id';let id=localStorage.getItem(key);if(!id||!/^[0-9a-f-]{36}$/i.test(id)){id=crypto.randomUUID();localStorage.setItem(key,id);}void supabase.rpc('record_site_visit',{p_visitor_id:id}).then(()=>{});}catch{/* Visitor tracking must not interrupt the platform */}},[]);
  const [menuOpen,setMenuOpen]=useState(false);
  const notificationInitialized=useRef(false);
@@ -91,7 +92,7 @@ export default function App(){
  const refreshNotifications=useCallback(async()=>{
  if(!supabase||!uid)return;
  const [n,r]=await Promise.all([supabase.from('announcements').select('id,title,body,created_at').order('created_at',{ascending:false}).limit(40),supabase.from('announcement_reads').select('announcement_id').eq('user_id',uid)]);
- if(!n.error){const list=(n.data||[]) as {id:string;title:string;body:string;created_at:string}[];if(notificationInitialized.current&&typeof Notification!=='undefined'&&Notification.permission==='granted'){for(const item of list){if(!notificationSeen.current.has(item.id)){try{new Notification(item.title,{body:item.body,icon:'/NABT/nabt-logo.svg',tag:'nabt-'+item.id});}catch{}}}}notificationSeen.current=new Set(list.map(x=>x.id));notificationInitialized.current=true;setNotifications(list);}
+ if(!n.error){const list=(n.data||[]) as {id:string;title:string;body:string;created_at:string}[];if(notificationInitialized.current&&typeof Notification!=='undefined'&&Notification.permission==='granted'){for(const item of list){if(!notificationSeen.current.has(item.id)){try{if('serviceWorker' in navigator){void navigator.serviceWorker.ready.then(reg=>reg.showNotification(item.title,{body:item.body,icon:'/NABT/nabt-logo.svg',tag:'nabt-'+item.id})).catch(()=>{});}else{new Notification(item.title,{body:item.body,icon:'/NABT/nabt-logo.svg',tag:'nabt-'+item.id});}}catch{}}}}notificationSeen.current=new Set(list.map(x=>x.id));notificationInitialized.current=true;setNotifications(list);}
  if(!r.error)setReadNotificationIds((r.data||[]).map(x=>x.announcement_id));
  },[uid]);
  useEffect(()=>{if(!uid)return;void refreshNotifications();const interval=window.setInterval(()=>void refreshNotifications(),30000);return()=>clearInterval(interval);},[uid,refreshNotifications]);
