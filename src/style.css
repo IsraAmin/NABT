@@ -684,3 +684,10 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .stats-visitor-grid small{font-size:11px;color:var(--muted)}
 .stats-visitor-grid strong{font-size:18px;color:var(--ink)}
 @media(max-width:650px){.attendance-columns{gap:3px}.attendance-column-track{height:170px}.attendance-column{height:230px}.attendance-column small{font-size:9px;white-space:normal}.stats-period-switch{width:100%;justify-content:space-between}.stats-period-switch button{flex:1;padding:10px 5px}.stats-visitor-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* Animate attendance columns rising into place, with gentle stagger. */
+@keyframes nabt-attendance-rise{from{transform:scaleY(0);opacity:.35}to{transform:scaleY(1);opacity:1}}
+@keyframes nabt-attendance-label{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.attendance-column-fill{transform-origin:bottom center;animation:nabt-attendance-rise .78s cubic-bezier(.19,.8,.24,1) both;animation-delay:calc(var(--bar-index,0)*55ms)}
+.attendance-column-value{animation:nabt-attendance-label .55s ease-out both;animation-delay:calc(300ms + var(--bar-index,0)*55ms)}
+@media(prefers-reduced-motion:reduce){.attendance-column-fill,.attendance-column-value{animation:none!important;transition:none!important}}
