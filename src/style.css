@@ -631,3 +631,8 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .attendance-export-fields button:disabled{opacity:.5;cursor:wait}
 .attendance-export>small{display:block;color:var(--muted);font-size:11px;line-height:1.9}
 @media(max-width:600px){.attendance-export-fields button{width:100%}}
+
+.compensation-detail-content{display:grid;gap:12px;margin-top:14px}
+.compensation-detail-section{padding:14px 16px;border:1px solid var(--line);background:var(--canvas);border-radius:12px}
+.compensation-detail-section h4{margin:0 0 8px;color:var(--primary);font-size:12px;font-weight:800}
+.compensation-detail-section p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:2;color:var(--ink);font-size:12px}
