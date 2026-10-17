@@ -124,12 +124,15 @@ export default function App(){
    const all:Record<string,unknown>[]=[];
    const pageSize=500;
    for(let start=0;start<100000;start+=pageSize){
-    let query=supabase!.from(table).select(fields);
-    if(table==='sessions')query=query.order('session_date',{ascending:false}).order('id',{ascending:false});
-    else query=query.order('session_id',{ascending:true}).order('member_id',{ascending:true});
-    const {data,error}=await query.range(start,start+pageSize-1);
-    if(error)throw error;
-    const rows=(data||[]) as Record<string,unknown>[];
+    // Keep each Supabase builder within its own table branch. A union
+    // builder can produce incompatible inferred TypeScript result types.
+    const result=table==='sessions'
+     ?await supabase!.from('sessions').select(fields).order('session_date',{ascending:false}).order('id',{ascending:false}).range(start,start+pageSize-1)
+     :table==='attendance'
+      ?await supabase!.from('attendance').select(fields).order('session_id',{ascending:true}).order('member_id',{ascending:true}).range(start,start+pageSize-1)
+      :await supabase!.from('session_responses').select(fields).order('session_id',{ascending:true}).order('member_id',{ascending:true}).range(start,start+pageSize-1);
+    if(result.error)throw result.error;
+    const rows=(result.data||[]) as Record<string,unknown>[];
     all.push(...rows);
     if(rows.length<pageSize)return all;
    }
