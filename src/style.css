@@ -770,8 +770,8 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 @media(max-width:600px){.profile-notification-settings{padding:14px}.profile-notify-action button{width:100%}}
 
 /* Accessible password visibility controls in sign-in and registration */
-.login-card .password-input-wrap{display:block;position:relative;direction:ltr}
-.login-card .password-input-wrap input{padding-inline-end:49px;direction:ltr}
-.login-card .password-visibility-toggle{position:absolute;inset-inline-end:5px;top:calc(50% + 3.5px);transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:40px;height:40px;min-height:40px;padding:0;border:0;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer}
+.login-card .password-input-wrap{display:block;position:relative;direction:ltr;margin-top:7px}
+.login-card .password-input-wrap input{margin-top:0;padding-inline-end:52px;direction:ltr}
+.login-card form .password-visibility-toggle{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:40px;height:40px;min-height:40px;margin:0;padding:0;border:0;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer}
 .login-card .password-visibility-toggle:hover{background:var(--canvas);color:var(--primary)}
 .login-card .password-visibility-toggle:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
