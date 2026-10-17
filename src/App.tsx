@@ -84,7 +84,21 @@ export default function App(){
  const csv='\uFEFF'+[headers,...rows].map(x=>x.map(csvCell).join(',')).join('\r\n');
  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='nabt-attendance-'+(exportFrom||'all')+'-'+(exportTo||today())+'.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);setNotice('تم تجهيز التقرير الملخص: '+rows.length+' جلسة.');
  }catch(error){setNotice('تعذر تصدير الحضور: '+(error instanceof Error?error.message:'تحققي من الاتصال والصلاحيات'));}finally{setExportingAttendance(false);}}
- const getEngagement=(memberId:string)=>{const ended=sessions.filter(sessionEnded);const memberResponses=responses.filter(r=>r.member_id===memberId&&ended.some(x=>x.id===r.session_id));const attended=memberResponses.filter(r=>r.response==='attended').length;const compensated=memberResponses.filter(r=>r.response==='compensated').length;const rate=ended.length?Math.round(attended/ended.length*100):null;return {done:attended,compensated,total:ended.length,rate,color:rate===null?'neutral':rate>=90?'green':rate>=50?'orange':'red'};};
+ const getEngagement=(memberId:string)=>{
+  // Use every ended session loaded from the database, never the 12-card home carousel.
+  const endedIds=new Set(sessions.filter(sessionEnded).map(x=>String(x.id)));
+  const attendedIds=new Set<string>();
+  const compensatedIds=new Set<string>();
+  for(const r of responses){
+   if(String(r.member_id)!==String(memberId)||!endedIds.has(String(r.session_id)))continue;
+   if(r.response==='attended')attendedIds.add(String(r.session_id));
+   else if(r.response==='compensated')compensatedIds.add(String(r.session_id));
+  }
+  const attended=attendedIds.size;
+  const compensated=[...compensatedIds].filter(id=>!attendedIds.has(id)).length;
+  const rate=endedIds.size?Math.round(Math.min(attended,endedIds.size)/endedIds.size*100):null;
+  return {done:attended,compensated,total:endedIds.size,rate,color:rate===null?'neutral':rate>=90?'green':rate>=50?'orange':'red'};
+ };
  async function exportSystemBackup(){if(!supabase||!director)return;setSaving(true);setNotice('جارٍ تجهيز نسخة البيانات...');try{const fetchAll=async(table:string,fields:string)=>{const data:unknown[]=[];for(let from=0;from<100000;from+=1000){const response=await supabase!.from(table).select(fields).range(from,from+999);if(response.error)throw response.error;const batch=response.data||[];data.push(...batch);if(batch.length<1000)break;}return data;};const [profilesData,booksData,sessionsData,responsesData,attendanceData]=await Promise.all([fetchAll('profiles','id,full_name,role,active'),fetchAll('books','*'),fetchAll('sessions','*'),fetchAll('session_responses','*'),fetchAll('attendance','*')]);const payload={format:'nabt-admin-export-v1',generated_at:new Date().toISOString(),profiles:profilesData,books:booksData,sessions:sessionsData,session_responses:responsesData,legacy_attendance:attendanceData};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob);const anchor=document.createElement('a');anchor.href=url;anchor.download='nabt-backup-'+today()+'.json';document.body.append(anchor);anchor.click();anchor.remove();URL.revokeObjectURL(url);setNotice('تم تجهيز ملف تصدير البيانات. احفظيه في مكان آمن.');}catch(error){setNotice('تعذر تجهيز النسخة: '+(error instanceof Error?error.message:'تحققي من صلاحيات البيانات والاتصال'));}finally{setSaving(false);}}
  const [responses,setResponses]=useState<SessionResponse[]>([]),[compensating,setCompensating]=useState<string|null>(null),[compText,setCompText]=useState('');
  const [selected,setSelected]=useState<Record<string,'present'|'absent'>>({});
@@ -104,14 +118,39 @@ export default function App(){
  useEffect(()=>{if(view!=='statistics'||!director||!supabase)return;let cancelled=false;setStatsLoading(true);setStatsError('');void Promise.all([supabase.rpc('get_site_statistics'),supabase.rpc('get_attendance_statistics')]).then(([visits,att])=>{if(cancelled)return;if(visits.error||att.error)setStatsError('تعذر تحميل بعض بيانات الإحصائيات');if(!visits.error)setSiteStats(visits.data as typeof siteStats);if(!att.error)setAttendanceStats(att.data as typeof attendanceStats);setStatsLoading(false);});return()=>{cancelled=true};},[view,director]);
  const reload=useCallback(async()=>{
   if(!supabase)return;
-  const [m,b,s,a,r]=await Promise.all([
-   supabase.from('profiles').select('id,full_name,role,active').order('full_name'),
-   supabase.from('books').select('id,title,author,status,source_url,description,cover_url').order('created_at',{ascending:false}),
-   supabase.from('sessions').select('id,session_date,study_type,book_id,description,start_time,end_time').order('session_date',{ascending:false}).limit(120),
-   supabase.from('attendance').select('session_id,member_id,status'),
-   supabase.from('session_responses').select('session_id,member_id,response,compensation_text')]);
-  if(m.error||b.error||s.error||a.error)setNotice('تعذر تحميل بعض البيانات. تحققي من الاتصال والصلاحيات.');
-  setMembers((m.data||[]) as Profile[]);setBooks((b.data||[]) as Book[]);setSessions((s.data||[]) as Session[]);setAttendance((a.data||[]) as Attendance[]);setResponses((r.data||[]) as SessionResponse[]);
+  // Supabase has a per-request row cap. Paginate all sessions and responses:
+  // presentation's .slice(0,12) must never limit statistics.
+  const fetchPages=async(table:'sessions'|'attendance'|'session_responses',fields:string)=>{
+   const all:Record<string,unknown>[]=[];
+   const pageSize=500;
+   for(let start=0;start<100000;start+=pageSize){
+    let query=supabase!.from(table).select(fields);
+    if(table==='sessions')query=query.order('session_date',{ascending:false}).order('id',{ascending:false});
+    else query=query.order('session_id',{ascending:true}).order('member_id',{ascending:true});
+    const {data,error}=await query.range(start,start+pageSize-1);
+    if(error)throw error;
+    const rows=(data||[]) as Record<string,unknown>[];
+    all.push(...rows);
+    if(rows.length<pageSize)return all;
+   }
+   throw new Error('تجاوز عدد السجلات الحد المتوقع. يلزم مراجعة جلب البيانات.');
+  };
+  try{
+   const [m,b,s,a,r]=await Promise.all([
+    supabase.from('profiles').select('id,full_name,role,active').order('full_name'),
+    supabase.from('books').select('id,title,author,status,source_url,description,cover_url').order('created_at',{ascending:false}),
+    fetchPages('sessions','id,session_date,study_type,book_id,description,start_time,end_time'),
+    fetchPages('attendance','session_id,member_id,status'),
+    fetchPages('session_responses','session_id,member_id,response,compensation_text')]);
+   if(m.error||b.error)throw m.error||b.error;
+   setMembers((m.data||[]) as Profile[]);
+   setBooks((b.data||[]) as Book[]);
+   setSessions(s as Session[]);
+   setAttendance(a as Attendance[]);
+   setResponses(r as SessionResponse[]);
+  }catch(error){
+   setNotice('تعذر تحميل جميع الجلسات وسجلات الحضور، لذلك قد تكون الإحصائيات غير مكتملة. '+(error instanceof Error?error.message:'تحققي من الاتصال والصلاحيات.'));
+  }
  },[]);
  useEffect(()=>{if(!supabase)return;supabase.auth.getUser().then(({data})=>setUid(data.user?.id??null));
  const {data}=supabase.auth.onAuthStateChange((_event,session)=>setUid(session?.user.id??null));
@@ -166,9 +205,10 @@ export default function App(){
  }
  async function changeUser(user:Profile,changes:{role?:Profile['role'];active?:boolean}){if(!supabase||!director||user.id===uid){setNotice('لا يمكن تعديل صلاحية أو حالة حسابك من هذه الصفحة.');return;}if(user.role==='director'&&changes.role&&changes.role!=='director'){setNotice('لا يمكن تخفيض صلاحية مديرة أخرى من هذه الواجهة.');return;}setSaving(true);const {error}=await supabase.from('profiles').update(changes).eq('id',user.id);setNotice(error?'تعذر تحديث المستخدم: '+error.message:'تم تحديث المستخدم بنجاح');if(!error)await reload();setSaving(false);}
  const myResponses=responses.filter(r=>r.member_id===uid);
- const recorded=sessions.filter(x=>x.session_date<today()).length;
- const attendanceCount=myResponses.filter(r=>r.response==='attended').length;
- const percent=recorded?Math.round(myResponses.length/recorded*100):null;
+ const myEngagement=uid?getEngagement(uid):null;
+ const recorded=myEngagement?.total??0;
+ const attendanceCount=myEngagement?.done??0;
+ const percent=myEngagement?.rate??null;
  const myCompletedBooks=books.filter(b=>b.status==='completed'&&sessions.some(session=>session.book_id===b.id&&myResponses.some(r=>r.session_id===session.id))).length;
  if(!supabase)return <main className="login"><section className="card"><h1>نبت</h1><p>يرجى ضبط متغيرات Supabase قبل التشغيل.</p></section></main>;
 
