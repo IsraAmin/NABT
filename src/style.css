@@ -769,9 +769,60 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .notifications-page .notification-entry-symbol{border-radius:15px}
 @media(max-width:600px){.profile-notification-settings{padding:14px}.profile-notify-action button{width:100%}}
 
-/* Accessible password visibility controls in sign-in and registration */
-.login-card .password-input-wrap{display:block;position:relative;direction:ltr;margin-top:7px}
-.login-card .password-input-wrap input{margin-top:0;padding-inline-end:52px;direction:ltr}
-.login-card form .password-visibility-toggle{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:40px;height:40px;min-height:40px;margin:0;padding:0;border:0;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer}
-.login-card .password-visibility-toggle:hover{background:var(--canvas);color:var(--primary)}
-.login-card .password-visibility-toggle:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
+/* NABT authentication inputs: accessible and touch-friendly password visibility.
+   Reuse brand tokens; keep the eye visually centered without shifting the input. */
+.login-card .password-input-wrap{
+  position:relative;
+  display:block;
+  width:100%;
+  margin-top:7px;
+  direction:ltr;
+}
+.login-card .password-input-wrap input{
+  display:block;
+  width:100%;
+  margin-top:0;
+  padding-inline-end:58px;
+  direction:ltr;
+}
+.login-card form .password-visibility-toggle{
+  position:absolute;
+  inset-inline-end:5px;
+  top:50%;
+  transform:translateY(-50%);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  min-width:44px;
+  min-height:44px;
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:var(--muted);
+  cursor:pointer;
+  line-height:1;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.login-card form .password-visibility-toggle:hover{
+  background:var(--canvas);
+  color:var(--primary);
+}
+.login-card form .password-visibility-toggle:focus-visible{
+  outline:2px solid var(--primary);
+  outline-offset:-3px;
+  background:var(--canvas);
+}
+.login-card form .password-visibility-toggle svg{
+  display:block;
+  width:20px;
+  height:20px;
+  flex-shrink:0;
+}
+@media (prefers-reduced-motion:reduce){
+  .login-card form .password-visibility-toggle{transition:none}
+}
