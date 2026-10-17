@@ -1,6 +1,6 @@
 import {useCallback,useEffect,useRef,useState,type FormEvent} from 'react';
 import {supabase} from './supabase';
-import {LayoutDashboard,CalendarCheck2,History,BookOpen,LogOut,Leaf,ArrowLeft,UsersRound,Menu,X,Sun,Moon,UserRound,ShieldCheck,Camera,BookMarked,ExternalLink,Bell,Pencil,Trash2,BarChart3,AlertTriangle,Eye,UserCheck,UserMinus} from 'lucide-react';
+import {LayoutDashboard,CalendarCheck2,History,BookOpen,LogOut,Leaf,ArrowLeft,UsersRound,Menu,X,Sun,Moon,UserRound,ShieldCheck,Camera,BookMarked,ExternalLink,Bell,Pencil,Trash2,BarChart3,AlertTriangle,Eye,EyeOff,UserCheck,UserMinus} from 'lucide-react';
 type Profile={id:string;full_name:string;role:'director'|'admin'|'member';active?:boolean};
 type Book={id:string;title:string;author:string|null;status:string;source_url?:string|null;description?:string|null;cover_url?:string|null};
 type Session={id:string;session_date:string;study_type:string;book_id:string|null;description:string|null;start_time:string|null;end_time:string|null};
