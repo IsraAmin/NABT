@@ -826,3 +826,16 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 @media (prefers-reduced-motion:reduce){
   .login-card form .password-visibility-toggle{transition:none}
 }
+
+/* Permanent member removal: visually distinct destructive action and confirmation. */
+.user-card-controls .user-delete-permanent{
+ display:inline-flex;align-items:center;justify-content:center;gap:7px;
+ min-height:44px;padding:9px 14px;border:1px solid #eab3ae;
+ border-radius:10px;background:#fff4f2;color:#9b2c26;font-weight:700;
+}
+.user-card-controls .user-delete-permanent:hover{background:#ffe8e4;border-color:#cb726a}
+.user-card-controls .user-delete-permanent:disabled{opacity:.5}
+.delete-member-verify-label{display:block;text-align:right;font-weight:700;margin:18px 0 14px;color:var(--ink)}
+.delete-member-verify-label input{display:block;width:100%;margin-top:9px;min-height:44px;text-align:right}
+[data-theme="dark"] .user-card-controls .user-delete-permanent{background:#452721;color:#ffb8b0;border-color:#754640}
+[data-theme="dark"] .user-card-controls .user-delete-permanent:hover{background:#5b302c}
