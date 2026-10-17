@@ -145,9 +145,9 @@ export default function App(){
    if(m.error||b.error)throw m.error||b.error;
    setMembers((m.data||[]) as Profile[]);
    setBooks((b.data||[]) as Book[]);
-   setSessions(s as Session[]);
-   setAttendance(a as Attendance[]);
-   setResponses(r as SessionResponse[]);
+   setSessions(s as unknown as Session[]);
+   setAttendance(a as unknown as Attendance[]);
+   setResponses(r as unknown as SessionResponse[]);
   }catch(error){
    setNotice('تعذر تحميل جميع الجلسات وسجلات الحضور، لذلك قد تكون الإحصائيات غير مكتملة. '+(error instanceof Error?error.message:'تحققي من الاتصال والصلاحيات.'));
   }
