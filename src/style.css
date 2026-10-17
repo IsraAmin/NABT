@@ -839,3 +839,21 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .delete-member-verify-label input{display:block;width:100%;margin-top:9px;min-height:44px;text-align:right}
 [data-theme="dark"] .user-card-controls .user-delete-permanent{background:#452721;color:#ffb8b0;border-color:#754640}
 [data-theme="dark"] .user-card-controls .user-delete-permanent:hover{background:#5b302c}
+
+/* NABT director-only full member profile */
+.member-details-expanded{width:min(680px,calc(100vw - 26px));max-height:min(88dvh,860px);overflow-y:auto;overscroll-behavior:contain;text-align:right;padding:28px;scrollbar-gutter:stable}
+.member-details-expanded .member-details-avatar{margin:0 auto 8px}
+.member-details-expanded>h2,.member-details-expanded .member-details-subtitle{text-align:center}
+.member-details-expanded .member-details-subtitle{font-size:12px;color:var(--muted);margin:-8px 0 22px}
+.member-detail-section{margin:16px 0 20px;padding:17px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.member-detail-section h3{font-size:14px;margin:0 0 13px;color:var(--ink)}
+.member-details-expanded .member-detail-section dl{margin:0}
+.member-details-expanded .member-detail-section dl div{display:grid;grid-template-columns:minmax(105px,35%) minmax(0,1fr);gap:12px;align-items:start}
+.member-details-expanded .member-detail-section dd{overflow-wrap:anywhere;text-align:start}
+.member-detail-bio{color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.member-details-expanded .member-session-history{max-height:280px;overflow-y:auto}
+.member-details-status,.member-details-error{padding:12px;border-radius:10px;background:var(--canvas);text-align:center}
+.member-details-error{color:#aa3430}
+.member-details-error button{margin-inline-start:8px;border:1px solid currentColor;background:transparent;border-radius:8px;padding:4px 10px;color:inherit}
+.member-details-dismiss{display:block;margin:18px auto 0;min-height:44px}
+@media(max-width:520px){.member-details-expanded{padding:22px 15px;max-height:92dvh}.member-detail-section{padding:13px}.member-details-expanded .member-detail-section dl div{grid-template-columns:minmax(100px,40%) minmax(0,1fr)}}
