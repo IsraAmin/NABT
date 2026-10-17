@@ -132,7 +132,7 @@ export default function App(){
       ?await supabase!.from('attendance').select(fields).order('session_id',{ascending:true}).order('member_id',{ascending:true}).range(start,start+pageSize-1)
       :await supabase!.from('session_responses').select(fields).order('session_id',{ascending:true}).order('member_id',{ascending:true}).range(start,start+pageSize-1);
     if(result.error)throw result.error;
-    const rows=(result.data||[]) as Record<string,unknown>[];
+    const rows=(result.data||[]) as unknown as Record<string,unknown>[];
     all.push(...rows);
     if(rows.length<pageSize)return all;
    }
