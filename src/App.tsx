@@ -1,10 +1,13 @@
 import {useCallback,useEffect,useRef,useState,type FormEvent} from 'react';
 import {supabase} from './supabase';
+import TrackedYouTubePlayer from './TrackedYouTubePlayer';
 import {LayoutDashboard,CalendarCheck2,History,BookOpen,LogOut,Leaf,ArrowLeft,UsersRound,Menu,X,Sun,Moon,UserRound,ShieldCheck,Camera,BookMarked,ExternalLink,Bell,Pencil,Trash2,BarChart3,AlertTriangle,Eye,EyeOff,UserCheck,UserMinus,Sprout,Video,PlayCircle} from 'lucide-react';
 type Profile={id:string;full_name:string;role:'director'|'admin'|'member';active?:boolean};
 type PrivateMemberDetails={id:string;full_name:string;role:Profile['role'];active:boolean|null;joined_at:string|null;created_at:string|null;email:string|null;phone:string|null;birth_date:string|null;country:string|null;city:string|null;university:string|null;bio:string|null;avatar_url:string|null};
 type Book={id:string;title:string;author:string|null;status:string;source_url?:string|null;description?:string|null;cover_url?:string|null};
-type ResourceVideo={id:string;youtube_id:string;title:string;description:string;category:string;is_published:boolean;sort_order:number;created_at:string};
+type ResourceVideo={id:string;youtube_id:string;title:string;description:string;category:string;is_published:boolean;sort_order:number;created_at:string;series_id:string|null};
+type VideoSeries={id:string;title:string;description:string;cover_youtube_id:string|null;published:boolean;sort_order:number};
+type VideoProgress={member_id:string;video_id:string;position_seconds:number;duration_seconds:number;max_watched_seconds:number;completed:boolean;completion_method:'self_report'|'tracked'|null;updated_at:string};
 type Session={id:string;session_date:string;study_type:string;book_id:string|null;description:string|null;start_time:string|null;end_time:string|null};
 type Attendance={session_id:string;member_id:string;status:'present'|'absent'};
 type SessionResponse={session_id:string;member_id:string;response:'attended'|'compensated';compensation_text:string|null};
@@ -58,6 +61,18 @@ export default function App(){
  const [about,setAbout]=useState(''),[contact,setContact]=useState(''),[avatar,setAvatar]=useState(''),[displayName,setDisplayName]=useState(''),[uploading,setUploading]=useState(false);
  const [resourceTab,setResourceTab]=useState<'books'|'videos'>('books');
  const [resourceVideos,setResourceVideos]=useState<ResourceVideo[]>([]);
+ const [videoSeries,setVideoSeries]=useState<VideoSeries[]>([]);
+ const [videoProgress,setVideoProgress]=useState<VideoProgress[]>([]);
+ const [seriesTitle,setSeriesTitle]=useState('');
+ const [seriesDescription,setSeriesDescription]=useState('');
+ const [seriesPublished,setSeriesPublished]=useState(true);
+ const [editingSeriesId,setEditingSeriesId]=useState<string|null>(null);
+ const [videoSeriesChoice,setVideoSeriesChoice]=useState('');
+ const [openedSeries,setOpenedSeries]=useState<string|null>(null);
+ const [watchError,setWatchError]=useState('');
+ const [watchCheckpoint,setWatchCheckpoint]=useState<{position:number;duration:number;watched:number}|null>(null);
+ const checkpointLatest=useRef<{videoId:string;position:number;duration:number;watched:number}|null>(null);
+ const savingCheckpoint=useRef(false);
  const [videoUrl,setVideoUrl]=useState('');
  const [videoTitle,setVideoTitle]=useState('');
  const [videoDescription,setVideoDescription]=useState('');
@@ -167,19 +182,19 @@ export default function App(){
  }
  const reloadVideos=useCallback(async()=>{
   if(!supabase)return;
-  const {data,error}=await supabase.from('resource_videos').select('id,youtube_id,title,description,category,is_published,sort_order,created_at').order('sort_order',{ascending:false}).order('created_at',{ascending:false});
+  const {data,error}=await supabase.from('resource_videos').select('id,youtube_id,title,description,category,is_published,sort_order,created_at,series_id').order('sort_order',{ascending:false}).order('created_at',{ascending:false});
   if(error)setNotice('تعذر تحميل المرئيات: '+error.message);
   else setResourceVideos((data||[]) as ResourceVideo[]);
  },[]);
  useEffect(()=>{if(uid&&profile)void reloadVideos();},[uid,profile,reloadVideos]);
  function resetVideoEditor(){
-  setEditingVideoId(null);setVideoUrl('');setVideoTitle('');setVideoDescription('');setVideoCategory('عام');setVideoSort(0);setVideoPublished(true);
+  setEditingVideoId(null);setVideoUrl('');setVideoTitle('');setVideoDescription('');setVideoCategory('عام');setVideoSort(0);setVideoPublished(true);setVideoSeriesChoice('');
  }
  function editVideo(video:ResourceVideo){
   setEditingVideoId(video.id);
   setVideoUrl('https://www.youtube.com/watch?v='+video.youtube_id);
   setVideoTitle(video.title);setVideoDescription(video.description||'');setVideoCategory(video.category||'عام');
-  setVideoSort(video.sort_order);setVideoPublished(video.is_published);
+  setVideoSort(video.sort_order);setVideoPublished(video.is_published);setVideoSeriesChoice(video.series_id||'');
   document.getElementById('video-resource-editor')?.scrollIntoView({behavior:'smooth',block:'center'});
  }
  async function saveVideo(e:FormEvent){
@@ -189,7 +204,7 @@ export default function App(){
   const title=videoTitle.trim(),category=videoCategory.trim()||'عام';
   if(title.length<3){setNotice('اكتبي عنوانًا للفيديو لا يقل عن ثلاثة أحرف.');return;}
   setSaving(true);
-  const payload={youtube_id,title,description:videoDescription.trim(),category,sort_order:videoSort,is_published:videoPublished};
+  const payload={youtube_id,title,description:videoDescription.trim(),category,sort_order:videoSort,is_published:videoPublished,series_id:videoSeriesChoice||null};
   const {error}=editingVideoId?await supabase.from('resource_videos').update(payload).eq('id',editingVideoId):await supabase.from('resource_videos').insert(payload);
   setSaving(false);
   if(error){setNotice('تعذر حفظ المرئية: '+error.message);return;}
@@ -204,6 +219,76 @@ export default function App(){
   setSaving(false);
   setNotice(error?'تعذر تنفيذ العملية: '+error.message:action==='delete'?'تم حذف الفيديو.':video.is_published?'تم إخفاء الفيديو.':'تم نشر الفيديو.');
   if(!error)await reloadVideos();
+ }
+ const reloadSeriesAndProgress=useCallback(async()=>{
+  if(!supabase||!uid)return;
+  const [s,p]=await Promise.all([
+   supabase.from('video_series').select('id,title,description,cover_youtube_id,published,sort_order').order('sort_order',{ascending:false}).order('created_at',{ascending:false}),
+   supabase.from('video_watch_progress').select('member_id,video_id,position_seconds,duration_seconds,max_watched_seconds,completed,completion_method,updated_at')
+  ]);
+  if(s.error||p.error){setNotice('تعذر تحميل تقدم المرئيات: '+(s.error?.message||p.error?.message));return;}
+  setVideoSeries((s.data||[]) as VideoSeries[]);
+  setVideoProgress((p.data||[]) as VideoProgress[]);
+ },[uid]);
+ useEffect(()=>{if(uid&&profile)void reloadSeriesAndProgress();},[uid,profile,reloadSeriesAndProgress]);
+ const ownVideoProgress=(videoId:string)=>videoProgress.find(p=>p.member_id===uid&&p.video_id===videoId);
+ const watchedPercent=(videoId:string)=>{
+  const p=ownVideoProgress(videoId);
+  return p?.completed?100:p?.duration_seconds?Math.min(99,Math.round(p.max_watched_seconds/p.duration_seconds*100)):0;
+ };
+ const seriesVideos=(seriesId:string)=>resourceVideos.filter(v=>v.series_id===seriesId&&v.is_published).sort((a,b)=>a.sort_order-b.sort_order||a.created_at.localeCompare(b.created_at));
+ const seriesPercent=(seriesId:string)=>{
+  const rows=seriesVideos(seriesId);
+  return rows.length?Math.round(rows.filter(v=>ownVideoProgress(v.id)?.completed).length/rows.length*100):0;
+ };
+ async function saveSeries(e:FormEvent){
+  e.preventDefault();if(!supabase||!staff||!uid||saving)return;
+  const title=seriesTitle.trim();
+  if(title.length<3)return setNotice('عنوان السلسلة يجب ألا يقل عن ثلاثة أحرف.');
+  setSaving(true);
+  const cover=resourceVideos.find(v=>v.series_id===editingSeriesId)?.youtube_id||null;
+  const payload={title,description:seriesDescription.trim(),published:seriesPublished,cover_youtube_id:cover};
+  const {error}=editingSeriesId?await supabase.from('video_series').update(payload).eq('id',editingSeriesId):await supabase.from('video_series').insert({...payload,created_by:uid});
+  setSaving(false);
+  if(error)return setNotice('تعذر حفظ السلسلة: '+error.message);
+  setNotice(editingSeriesId?'تم تحديث السلسلة.':'تمت إضافة السلسلة.');
+  setEditingSeriesId(null);setSeriesTitle('');setSeriesDescription('');setSeriesPublished(true);
+  await reloadSeriesAndProgress();
+ }
+ function editSeries(series:VideoSeries){setEditingSeriesId(series.id);setSeriesTitle(series.title);setSeriesDescription(series.description);setSeriesPublished(series.published);document.getElementById('series-editor')?.scrollIntoView({behavior:'smooth',block:'center'});}
+ async function removeSeries(series:VideoSeries){
+  if(!supabase||!staff||!window.confirm('حذف السلسلة؟ ستبقى فيديوهاتها مستقلة ولن تُحذف.'))return;
+  setSaving(true);const {error}=await supabase.from('video_series').delete().eq('id',series.id);setSaving(false);
+  if(error)return setNotice(error.message);
+  setNotice('تم حذف السلسلة دون حذف الفيديوهات.');await reloadVideos();await reloadSeriesAndProgress();
+ }
+ async function persistProgress(videoId:string,position:number,duration:number,watchedDelta:number,completed=false){
+  if(!supabase||!uid)return;
+  const previous=videoProgress.find(p=>p.member_id===uid&&p.video_id===videoId);
+  const payload={member_id:uid,video_id:videoId,position_seconds:Math.max(0,Math.floor(position)),duration_seconds:Math.max(0,Math.floor(duration)),max_watched_seconds:(previous?.max_watched_seconds||0)+Math.max(0,Math.floor(watchedDelta)),completed:completed||previous?.completed||false,completion_method:completed?'self_report':previous?.completion_method||null};
+  const {data,error}=await supabase.from('video_watch_progress').upsert(payload,{onConflict:'member_id,video_id'}).select('member_id,video_id,position_seconds,duration_seconds,max_watched_seconds,completed,completion_method,updated_at').single();
+  if(error){setNotice('تعذر حفظ تقدم الفيديو: '+error.message);return;}
+  setVideoProgress(current=>[...current.filter(p=>!(p.video_id===videoId&&p.member_id===uid)),data as VideoProgress]);
+ }
+ async function flushVideoCheckpoint(){
+  if(savingCheckpoint.current||!checkpointLatest.current)return;
+  const data=checkpointLatest.current;checkpointLatest.current=null;savingCheckpoint.current=true;
+  await persistProgress(data.videoId,data.position,data.duration,data.watched);
+  savingCheckpoint.current=false;
+  if(checkpointLatest.current)void flushVideoCheckpoint();
+ }
+ function checkpointVideo(videoId:string,position:number,duration:number,watched:number){
+  const existing=checkpointLatest.current;
+  checkpointLatest.current={videoId,position,duration,watched:watched+(existing?.videoId===videoId?existing.watched:0)};
+  void flushVideoCheckpoint();
+ }
+ async function markVideoCompleted(video:ResourceVideo){
+  if(!supabase||!uid)return;
+  const p=ownVideoProgress(video.id);
+  const {data,error}=await supabase.from('video_watch_progress').upsert({member_id:uid,video_id:video.id,position_seconds:p?.position_seconds||0,duration_seconds:p?.duration_seconds||0,max_watched_seconds:p?.max_watched_seconds||0,completed:true,completion_method:'self_report'},{onConflict:'member_id,video_id'}).select('member_id,video_id,position_seconds,duration_seconds,max_watched_seconds,completed,completion_method,updated_at').single();
+  if(error)return setNotice('تعذر تأكيد المشاهدة: '+error.message);
+  setVideoProgress(current=>[...current.filter(x=>!(x.member_id===uid&&x.video_id===video.id)),data as VideoProgress]);
+  setNotice('تم تسجيل مشاهدة الفيديو بإقرارك 🌱');
  }
  async function exportAttendanceCsv(){if(!supabase||!staff)return;if(exportFrom&&exportTo&&exportFrom>exportTo){setNotice('تاريخ البداية يجب أن يكون قبل تاريخ النهاية.');return;}setExportingAttendance(true);setNotice('جارٍ تجهيز ملف الحضور...');try{
  const fetchAll=async(table:'sessions'|'session_responses'|'profiles'|'books')=>{const all:Record<string,unknown>[]=[];for(let from=0;from<1000000;from+=1000){const {data,error}=await supabase!.from(table).select('*').range(from,from+999);if(error)throw error;const batch=(data||[]) as Record<string,unknown>[];all.push(...batch);if(batch.length<1000)break;}return all;};
