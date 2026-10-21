@@ -164,6 +164,46 @@ export default function App(){
   setSaving(false);setNotice(error?'تعذر تعديل الثمرة: '+error.message:operation==='delete'?'تم حذف الثمرة.':operation==='hidden'?'تم إخفاء الثمرة.':'تم إعادة نشر الثمرة.');
   if(!error)await reloadThamarat();
  }
+ const reloadVideos=useCallback(async()=>{
+  if(!supabase)return;
+  const {data,error}=await supabase.from('resource_videos').select('id,youtube_id,title,description,category,is_published,sort_order,created_at').order('sort_order',{ascending:false}).order('created_at',{ascending:false});
+  if(error)setNotice('تعذر تحميل المرئيات: '+error.message);
+  else setResourceVideos((data||[]) as ResourceVideo[]);
+ },[]);
+ useEffect(()=>{if(uid&&profile)void reloadVideos();},[uid,profile,reloadVideos]);
+ function resetVideoEditor(){
+  setEditingVideoId(null);setVideoUrl('');setVideoTitle('');setVideoDescription('');setVideoCategory('عام');setVideoSort(0);setVideoPublished(true);
+ }
+ function editVideo(video:ResourceVideo){
+  setEditingVideoId(video.id);
+  setVideoUrl('https://www.youtube.com/watch?v='+video.youtube_id);
+  setVideoTitle(video.title);setVideoDescription(video.description||'');setVideoCategory(video.category||'عام');
+  setVideoSort(video.sort_order);setVideoPublished(video.is_published);
+  document.getElementById('video-resource-editor')?.scrollIntoView({behavior:'smooth',block:'center'});
+ }
+ async function saveVideo(e:FormEvent){
+  e.preventDefault();if(!supabase||!staff||saving)return;
+  const youtube_id=youtubeVideoId(videoUrl);
+  if(!youtube_id){setNotice('رابط يوتيوب غير صالح. استخدمي رابط youtube.com أو youtu.be.');return;}
+  const title=videoTitle.trim(),category=videoCategory.trim()||'عام';
+  if(title.length<3){setNotice('اكتبي عنوانًا للفيديو لا يقل عن ثلاثة أحرف.');return;}
+  setSaving(true);
+  const payload={youtube_id,title,description:videoDescription.trim(),category,sort_order:videoSort,is_published:videoPublished};
+  const {error}=editingVideoId?await supabase.from('resource_videos').update(payload).eq('id',editingVideoId):await supabase.from('resource_videos').insert(payload);
+  setSaving(false);
+  if(error){setNotice('تعذر حفظ المرئية: '+error.message);return;}
+  setNotice(editingVideoId?'تم تعديل الفيديو بنجاح.':'تمت إضافة الفيديو إلى المصادر.');
+  resetVideoEditor();await reloadVideos();
+ }
+ async function manageVideo(video:ResourceVideo,action:'toggle'|'delete'){
+  if(!supabase||!staff||saving)return;
+  if(action==='delete'&&!window.confirm('هل تريدين حذف هذا الفيديو من المصادر نهائيًا؟'))return;
+  setSaving(true);
+  const {error}=action==='delete'?await supabase.from('resource_videos').delete().eq('id',video.id):await supabase.from('resource_videos').update({is_published:!video.is_published}).eq('id',video.id);
+  setSaving(false);
+  setNotice(error?'تعذر تنفيذ العملية: '+error.message:action==='delete'?'تم حذف الفيديو.':video.is_published?'تم إخفاء الفيديو.':'تم نشر الفيديو.');
+  if(!error)await reloadVideos();
+ }
  async function exportAttendanceCsv(){if(!supabase||!staff)return;if(exportFrom&&exportTo&&exportFrom>exportTo){setNotice('تاريخ البداية يجب أن يكون قبل تاريخ النهاية.');return;}setExportingAttendance(true);setNotice('جارٍ تجهيز ملف الحضور...');try{
  const fetchAll=async(table:'sessions'|'session_responses'|'profiles'|'books')=>{const all:Record<string,unknown>[]=[];for(let from=0;from<1000000;from+=1000){const {data,error}=await supabase!.from(table).select('*').range(from,from+999);if(error)throw error;const batch=(data||[]) as Record<string,unknown>[];all.push(...batch);if(batch.length<1000)break;}return all;};
  const [allSessions,allResponses,allMembers,allBooks]=await Promise.all([fetchAll('sessions'),fetchAll('session_responses'),fetchAll('profiles'),fetchAll('books')]);
