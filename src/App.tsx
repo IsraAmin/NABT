@@ -70,7 +70,6 @@ export default function App(){
  const [videoSeriesChoice,setVideoSeriesChoice]=useState('');
  const [openedSeries,setOpenedSeries]=useState<string|null>(null);
  const [watchError,setWatchError]=useState('');
- const [watchCheckpoint,setWatchCheckpoint]=useState<{position:number;duration:number;watched:number}|null>(null);
  const checkpointLatest=useRef<{videoId:string;position:number;duration:number;watched:number}|null>(null);
  const savingCheckpoint=useRef(false);
  const [videoUrl,setVideoUrl]=useState('');
