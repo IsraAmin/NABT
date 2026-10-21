@@ -538,7 +538,7 @@ export default function App(){
  <button type="button" className="resources-course-back" onClick={()=>setOpenedSeries(null)}><ArrowLeft size={17}/> العودة إلى جميع السلاسل</button>
  <div className="resources-course-hero">
   <div className="resources-course-identity"><div className="resources-course-photo">{(series.cover_youtube_id||episodes[0]?.youtube_id)?<img src={'https://i.ytimg.com/vi/'+(series.cover_youtube_id||episodes[0]?.youtube_id)+'/hqdefault.jpg'} alt={'غلاف '+series.title}/>:<BookOpen size={42}/>}</div><div><span className="resources-course-eyebrow">سلسلة تعليمية · مرئيات نَبْت</span><h2>{series.title}</h2><p>{series.description||'مجموعة من الدروس المرئية المختارة للتعلّم خطوة بخطوة.'}</p><div className="resources-course-facts"><span><Video size={17}/>{episodes.length} دروس</span><span><CheckCircle2 size={17}/>{finished} مكتمل</span></div></div></div>
-  <div className="resources-course-score"><div className="resources-course-ring" style={{background:'conic-gradient(#bc376f '+percent+'%, var(--line) 0)'}}><strong>{percent}%</strong></div><small>إنجاز السلسلة</small></div>
+  <div className="resources-course-score"><div className="resources-course-ring" style={{background:'conic-gradient(#248653 '+percent+'%, var(--line) 0)'}}><strong>{percent}%</strong></div><small>إنجاز السلسلة</small></div>
  </div>
  <div className="resources-course-progress"><div><strong>تقدمك في السلسلة</strong><span>{finished} / {episodes.length} درس مكتمل</span></div><div className="resources-progress-track"><span style={{width:percent+'%'}}/></div></div>
  <div className="resources-course-lessons-title"><h3>الدروس</h3><small>اختاري الدرس لمشاهدته أو مواصلته من آخر موضع</small></div>
