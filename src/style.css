@@ -920,3 +920,13 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 [data-theme="dark"] .thamarat-post-category{background:#294533;color:#a8daba}
 @media(max-width:820px){.thamarat-feed{grid-template-columns:1fr}}
 @media(max-width:600px){.thamarat-hero{padding:27px 22px}.thamarat-toolbar{align-items:stretch}.thamarat-search,.thamarat-search input{width:100%;min-width:0}.thamarat-editor{grid-template-columns:1fr;padding:13px}.thamarat-editor-body,.thamarat-editor-foot{grid-column:auto}.thamarat-admin{padding:12px}.thamarat-admin-item{align-items:start;flex-direction:column}.thamarat-post-head time{font-size:9px}.thamarat-post-head,.thamarat-post-content{padding-inline:16px}}
+
+/* Staff editing and contributor credits for Thamarat */
+.thamarat-edit-banner{grid-column:1/-1;display:flex;align-items:center;gap:9px;border:1px solid #b7dbc3;background:#edf8ef;color:#256749;border-radius:11px;padding:12px 14px;font-size:13px;font-weight:750}
+.thamarat-form-note{display:block;margin-top:2px;font-size:11px;line-height:1.8;font-weight:400;color:var(--muted)}
+.thamarat-editor-foot .thamarat-cancel-edit{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.thamarat-admin-actions .thamarat-edit-action{border-color:#a5c7b4;color:#23714f;background:#f0f7f1}
+.thamarat-admin-actions button{min-height:37px;white-space:nowrap}
+[data-theme="dark"] .thamarat-edit-banner{background:#264432;color:#c3e5ce;border-color:#42664d}
+[data-theme="dark"] .thamarat-admin-actions .thamarat-edit-action{background:#263d31;color:#bde1c5;border-color:#426b4d}
+@media(max-width:600px){.thamarat-admin-actions{flex-wrap:wrap}.thamarat-admin-actions button{min-height:42px}}
