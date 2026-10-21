@@ -1011,3 +1011,61 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .resources-video-cta button{flex:1;min-height:39px}
 .resources-video-cta a{min-height:39px}
 @media(max-width:650px){.resources-videos-grid{grid-template-columns:1fr;gap:16px}.resources-video-card{max-width:560px;width:100%;margin-inline:auto}.resources-video-copy{padding:15px 16px}.resources-video-copy h3{font-size:16px}}
+
+/* Educational video series and learner progress */
+.resources-series-admin{margin:18px 0 26px;padding:18px;border:1px solid var(--line);background:var(--canvas);border-radius:16px}
+.resources-series-admin h3,.resources-watch-admin-report h3{color:var(--ink);font-size:18px;margin:0 0 6px}
+.resources-series-admin p,.resources-watch-admin-report p{font-size:12px;color:var(--muted)}
+.resources-series-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:15px 0}
+.resources-series-form label{display:flex;flex-direction:column;gap:8px;font-size:12px;font-weight:750;color:var(--ink)}
+.resources-series-form input:not([type=checkbox]),.resources-series-form textarea,.resources-video-form select{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font:inherit}
+.resources-series-form label:nth-child(2){grid-column:1/-1}
+.resources-series-form .resources-publish-check{flex-direction:row;align-items:center;gap:8px}
+.resources-series-admin-buttons{display:flex;gap:8px;justify-content:flex-end}
+.resources-series-admin-buttons button{background:#22734f;color:#fff;border:0;border-radius:9px;padding:10px 15px}
+.resources-series-admin-buttons button.resources-neutral{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.resources-series-admin-list{display:grid;gap:9px}
+.resources-series-admin-list article{border:1px solid var(--line);padding:13px;border-radius:11px;display:flex;gap:14px;justify-content:space-between;align-items:center}
+.resources-series-admin-list article>div:first-child{display:grid;gap:5px;min-width:0}
+.resources-series-admin-list strong{color:var(--ink);font-size:13px}
+.resources-series-admin-list small{color:var(--muted)}
+.resources-series-admin-list article>div:last-child{display:flex;gap:7px}
+.resources-series-admin-list button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:8px;display:flex;align-items:center;gap:4px}
+.resources-watch-admin-report{margin-top:30px;border-top:1px solid var(--line);padding-top:25px}
+.resources-report-table{width:100%;overflow:auto}
+.resources-report-table table{width:100%;border-collapse:collapse;font-size:12px;min-width:540px}
+.resources-report-table th,.resources-report-table td{padding:11px;border-bottom:1px solid var(--line);text-align:right;color:var(--ink)}
+.resources-series-feed{margin-bottom:32px}
+.resources-series-feed>h3,.resources-standalone-heading{font-size:18px;color:var(--ink);margin:20px 0 16px}
+.resources-series-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:19px}
+.resources-series-card{border:1px solid var(--line);background:var(--surface);border-radius:17px;overflow:hidden;box-shadow:0 9px 26px #152e2210;align-self:start}
+.resources-series-cover{width:100%;aspect-ratio:16/9;display:block;position:relative;overflow:hidden;border:0;background:#18392b;padding:0;cursor:pointer}
+.resources-series-cover img{width:100%;height:100%;object-fit:cover}
+.resources-series-cover span{position:absolute;right:14px;bottom:13px;color:white;background:#0e3f30cf;border-radius:8px;padding:7px 12px;font-size:12px}
+.resources-series-copy{padding:18px}
+.resources-series-copy h4{font-size:18px;color:var(--ink);margin:0 0 8px}
+.resources-series-copy p{font-size:12px;color:var(--muted);line-height:1.9;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.resources-progress-meta{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:12px;color:var(--ink);margin:15px 0 8px}
+.resources-progress-meta b,.resources-progress-meta strong{font-variant-numeric:tabular-nums}
+.resources-progress-track{height:8px;background:var(--line);border-radius:30px;overflow:hidden}
+.resources-progress-track span{display:block;background:#26925c;height:100%;border-radius:30px;transition:width .2s}
+.resources-series-expand{margin-top:17px;display:flex;align-items:center;gap:8px;border:0;background:transparent;color:#298457;font-weight:800;cursor:pointer}
+.resources-episode-list{border-top:1px solid var(--line);padding:8px 13px 15px;display:grid;gap:8px}
+.resources-episode-row{width:100%;display:flex;align-items:center;gap:10px;padding:9px;border:1px solid var(--line);border-radius:11px;background:var(--canvas);color:var(--ink);text-align:right;cursor:pointer}
+.resources-episode-index{display:grid;place-items:center;width:25px;height:25px;flex-shrink:0;border-radius:50%;background:var(--surface);font-size:11px}
+.resources-episode-row img{width:75px;aspect-ratio:16/9;object-fit:cover;border-radius:6px;flex-shrink:0}
+.resources-episode-detail{flex:1;min-width:0;display:grid;gap:5px}
+.resources-episode-detail strong{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.resources-episode-detail small{font-size:11px;color:var(--muted)}
+.resources-inline-progress{margin:0 0 7px}
+.resources-inline-progress .resources-progress-track{height:5px}
+.resources-inline-progress small{font-size:10px;color:var(--muted)}
+.resources-watch-progress{padding:17px 20px;border-bottom:1px solid var(--line)}
+.resources-watch-progress .resources-progress-meta{margin:0 0 10px}
+.resources-watch-progress>small{display:block;color:var(--muted);font-size:11px;margin:8px 0 15px}
+.resources-mark-complete{display:inline-flex;padding:11px 17px;border:0;border-radius:10px;background:#21784e;color:white;font-weight:800}
+.resources-mark-complete:disabled{background:var(--canvas);color:#2e8255;border:1px solid var(--line)}
+.resources-watch-error{color:#bd4a31;background:var(--canvas);padding:12px;font-size:12px}
+.resources-player-target{height:100%;width:100%}
+.resources-player-target iframe{width:100%;height:100%;border:0}
+@media(max-width:650px){.resources-series-form{grid-template-columns:1fr}.resources-series-form label:nth-child(2){grid-column:auto}.resources-series-admin-list article{flex-wrap:wrap}.resources-series-admin-list article>div:last-child{width:100%}.resources-episode-row img{width:68px}}
