@@ -1251,3 +1251,13 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 [data-theme="dark"] .nabt-about-continuity-items>div{background:#2c4b33;color:#e1f2e1}
 @media(max-width:820px){.nabt-about-program-grid{grid-template-columns:1fr 1fr}.nabt-about-continuity{grid-template-columns:1fr;gap:22px}}
 @media(max-width:550px){.nabt-about-program-grid{grid-template-columns:1fr}.nabt-about-program-grid article{padding:20px}.nabt-about-continuity{padding:21px}.nabt-about-quote{padding-bottom:28px}}
+
+/* Searchable Thamarat credited-member picker */
+.thamarat-member-picker{position:relative;display:block;width:100%}
+.thamarat-member-picker>input{width:100%}
+.thamarat-member-options{position:absolute;inset-inline:0;top:calc(100% + 5px);z-index:20;max-height:240px;overflow-y:auto;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:5px;box-shadow:0 14px 34px #12392322}
+.thamarat-member-options button{width:100%;border:0;background:transparent;color:var(--ink);padding:10px;display:flex;align-items:center;gap:10px;text-align:right;border-radius:8px;font-size:13px;cursor:pointer}
+.thamarat-member-options button:hover,.thamarat-member-options button[aria-selected="true"]{background:var(--canvas)}
+.thamarat-member-avatar{flex-shrink:0;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#deefe3;color:#267549;font-weight:800}
+.thamarat-member-options p{margin:0;padding:15px;font-size:12px;color:var(--muted)}
+.thamarat-member-picked{display:inline-flex;align-items:center;gap:5px;margin-top:5px;color:#278353;font-weight:700;font-size:11px}
