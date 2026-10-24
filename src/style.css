@@ -1165,3 +1165,12 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
  .resources-watch-overlay.resources-watch-page{padding:0;margin-bottom:22px}
  .resources-watch-page .resources-watch-dialog.resources-lesson-dialog{max-height:none;border-radius:13px}
 }
+
+/* Thamarat compact masonry layout: cards stack without blank grid rows */
+.thamarat-feed{display:block;columns:2;column-gap:20px}
+.thamarat-feed>.thamarat-post{display:inline-block;vertical-align:top;width:100%;margin:0 0 20px;break-inside:avoid;page-break-inside:avoid}
+.thamarat-feed>.thamarat-empty{display:block;break-inside:avoid}
+@media(max-width:820px){.thamarat-feed{columns:1;column-gap:0}.thamarat-feed>.thamarat-post{display:block}}
+/* New book category: selected reading for benefit */
+.book-status.status-for_benefit{background:#e7f4e9;color:#236946;border-color:#bfe1c8}
+[data-theme="dark"] .book-status.status-for_benefit{background:#244733;color:#c5efd1;border-color:#356d4b}
