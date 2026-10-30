@@ -1261,3 +1261,14 @@ h1,h2,h3,h4,h5,h6,p,span,small,strong,a,label,table,th,td{
 .thamarat-member-avatar{flex-shrink:0;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#deefe3;color:#267549;font-weight:800}
 .thamarat-member-options p{margin:0;padding:15px;font-size:12px;color:var(--muted)}
 .thamarat-member-picked{display:inline-flex;align-items:center;gap:5px;margin-top:5px;color:#278353;font-weight:700;font-size:11px}
+
+/* Admin content organization */
+.nabt-admin-switch{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0;padding:8px;border:1px solid #dce8dc;border-radius:16px;background:#f6faf6}
+.nabt-admin-switch button{border:1px solid transparent;border-radius:11px;padding:11px 17px;background:transparent;color:#315a43;font:inherit;font-weight:700;cursor:pointer}
+.nabt-admin-switch button.active{background:#12633e;color:#fff;box-shadow:0 3px 8px #12633e22}
+.nabt-admin-filter{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:16px 0 22px;padding:18px;border-radius:14px;background:#f7faf7;border:1px solid #e1ebe1}
+.nabt-admin-filter label{display:grid;gap:7px;font-weight:700;color:#28543b}
+.nabt-admin-filter select,.nabt-admin-filter input{box-sizing:border-box;width:100%;padding:12px;border:1px solid #ccdccc;border-radius:10px;background:#fff;color:#203f2f;font:inherit}
+.resources-admin-video-list{max-height:620px;overflow-y:auto;overscroll-behavior:contain}
+.resources-series-admin-list{max-height:400px;overflow-y:auto}
+@media(max-width:640px){.nabt-admin-switch button{flex:1;padding:11px 9px}.nabt-admin-filter{padding:12px}}
