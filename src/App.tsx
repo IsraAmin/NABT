@@ -67,7 +67,6 @@ export default function App(){
  const [videoManageSeries,setVideoManageSeries]=useState('');
  const [videoAdminSearch,setVideoAdminSearch]=useState('');
  const [sessionManageMode,setSessionManageMode]=useState<'browse'|'create'|'edit'>('browse');
- const [sessionAdminPage,setSessionAdminPage]=useState(1);
  const [seriesTitle,setSeriesTitle]=useState('');
  const [seriesDescription,setSeriesDescription]=useState('');
  const [seriesPublished,setSeriesPublished]=useState(true);
