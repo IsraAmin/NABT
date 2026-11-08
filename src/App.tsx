@@ -3,6 +3,7 @@ import {supabase} from './supabase';
 import TrackedYouTubePlayer from './TrackedYouTubePlayer';
 import {LayoutDashboard,CalendarCheck2,History,BookOpen,LogOut,Leaf,ArrowLeft,UsersRound,Menu,X,Sun,Moon,UserRound,ShieldCheck,Camera,BookMarked,ExternalLink,Bell,Pencil,Trash2,BarChart3,AlertTriangle,Eye,EyeOff,UserCheck,UserMinus,Sprout,Video,PlayCircle,CheckCircle2,Circle,LockKeyhole} from 'lucide-react';
 type Profile={id:string;full_name:string;role:'director'|'admin'|'member';active?:boolean;approval_status?:'pending'|'approved'|'rejected';nabt_group?:'nabt1'|'nabt2'|null};
+type SignupApplication={id:string;full_name:string;email:string;phone:string;birth_date:string;country:string;city:string;nabt_group:'nabt1'|'nabt2';created_at:string};
 type PrivateMemberDetails={id:string;full_name:string;role:Profile['role'];active:boolean|null;joined_at:string|null;created_at:string|null;email:string|null;phone:string|null;birth_date:string|null;country:string|null;city:string|null;university:string|null;bio:string|null;avatar_url:string|null;nabt_group:'nabt1'|'nabt2'|null};
 type Book={id:string;title:string;author:string|null;status:string;source_url?:string|null;description?:string|null;cover_url?:string|null};
 type ResourceVideo={id:string;youtube_id:string;title:string;description:string;category:string;is_published:boolean;sort_order:number;created_at:string;series_id:string|null;access_status:'available'|'locked'|'hidden'};
@@ -114,7 +115,8 @@ export default function App(){
  const [showPassword,setShowPassword]=useState(false),[showConfirmPassword,setShowConfirmPassword]=useState(false);
  const [signupGroup,setSignupGroup]=useState<'nabt1'|'nabt2'|''>('');
  const [signupPhone,setSignupPhone]=useState(''),[signupBirthDate,setSignupBirthDate]=useState(''),[signupCountry,setSignupCountry]=useState(''),[signupCity,setSignupCity]=useState('');
- const [registrationRequests,setRegistrationRequests]=useState<Profile[]>([]);
+ const [registrationRequests,setRegistrationRequests]=useState<SignupApplication[]>([]);
+ const [applicationDetails,setApplicationDetails]=useState<SignupApplication|null>(null);
  const [members,setMembers]=useState<Profile[]>([]),[books,setBooks]=useState<Book[]>([]),[sessions,setSessions]=useState<Session[]>([]),[attendance,setAttendance]=useState<Attendance[]>([]);
  const [date,setDate]=useState(today()),[studyType,setStudyType]=useState('دراسة'),[bookId,setBookId]=useState(''),[sessionDescription,setSessionDescription]=useState(''),[startTime,setStartTime]=useState('09:00'),[endTime,setEndTime]=useState('11:00');
  const [memberSearch,setMemberSearch]=useState('');
@@ -400,7 +402,7 @@ async function saveSeries(e:FormEvent){
     fetchPages('session_responses','session_id,member_id,response,compensation_text')]);
    if(m.error||b.error)throw m.error||b.error;
    const allProfiles=(m.data||[]) as Profile[];
-   setRegistrationRequests(allProfiles.filter(member=>member.approval_status==='pending'&&member.active===false));
+   // New applications live outside auth.users and profiles, until director approval.
    setMembers(allProfiles.filter(member=>member.approval_status==='approved'));
 
    setBooks((b.data||[]) as Book[]);
@@ -419,7 +421,26 @@ async function saveSeries(e:FormEvent){
  useEffect(()=>{if(profile?.role!=='director'||!supabase)return;supabase.rpc('nabt_member_avatars').then(({data})=>{const imgs:Record<string,string>={};for(const item of data||[]){if(item.avatar_url)imgs[item.member_id]=item.avatar_url;}setMemberAvatars(imgs);});},[profile]);
  async function login(e:FormEvent){e.preventDefault();if(!supabase)return setNotice('لم يكتمل إعداد الاتصال');setSaving(true);const {data,error}=await supabase.auth.signInWithPassword({email,password});if(error){setNotice('تعذر تسجيل الدخول: تحققي من البريد وكلمة المرور');setSaving(false);return;}if(data.user){const result=await supabase.from('profiles').select('approval_status,active').eq('id',data.user.id).single();if(!result.error&&result.data&&(result.data.approval_status!=='approved'||result.data.active===false)){await supabase.auth.signOut();setNotice(result.data.approval_status==='rejected'?'تم رفض طلب الانضمام. تواصلي مع المديرة.':result.data.approval_status==='pending'?'طلبك بانتظار موافقة المديرة. لا يمكن الدخول حاليًا.':'حسابك غير نشط. تواصلي مع المديرة.');setSaving(false);return;}}setNotice('');setSaving(false);}
  async function resendConfirmation(){if(!supabase)return;if(!email.trim())return setNotice('اكتبي البريد الإلكتروني أولًا ثم اضغطي إعادة إرسال رابط التفعيل.');setSaving(true);setNotice('');const {error}=await supabase.auth.resend({type:'signup',email:email.trim(),options:{emailRedirectTo:window.location.origin+import.meta.env.BASE_URL}});setNotice(error?'تعذر إرسال الرابط: '+authConnectionError(emailError(error.message)):'إذا كان البريد مسجّلًا وينتظر التأكيد، ستصلك رسالة جديدة. تحققي من البريد والرسائل غير المرغوبة.');setSaving(false);}
- async function signUp(e:FormEvent){e.preventDefault();if(!supabase)return;setNotice('');if(fullName.trim().length<3)return setNotice('يرجى كتابة الاسم الكامل');if(!/^\+?[0-9\s()-]{7,20}$/.test(signupPhone.trim())||signupPhone.replace(/\D/g,'').length<7)return setNotice('يرجى إدخال رقم هاتف صحيح');if(!signupBirthDate||signupBirthDate>today())return setNotice('تاريخ الميلاد إلزامي ويجب أن يكون تاريخًا سابقًا أو اليوم');if(!signupCountry.trim()||!signupCity.trim())return setNotice('الدولة والمدينة مطلوبتان لإنشاء الحساب');if(signupGroup!=='nabt1'&&signupGroup!=='nabt2')return setNotice('يجب اختيار المجموعة: نبت 1 أو نبت 2');if(password.length<8)return setNotice('يجب ألا تقل كلمة المرور عن 8 أحرف');if(password!==confirmPassword)return setNotice('كلمتا المرور غير متطابقتين');setSaving(true);const {data,error}=await supabase.auth.signUp({email:email.trim(),password,options:{data:{full_name:fullName.trim(),phone:signupPhone.trim(),birth_date:signupBirthDate,country:signupCountry.trim(),city:signupCity.trim(),nabt_group:signupGroup},emailRedirectTo:window.location.origin+import.meta.env.BASE_URL}});setSaving(false);if(error){setNotice('تعذر إنشاء الحساب: '+authConnectionError(emailError(error.message)));return;}if(data.session)await supabase.auth.signOut();setNotice('تم إرسال طلب الانضمام. تحققي من بريدك لتفعيل البريد الإلكتروني، وانتظري موافقة المديرة قبل الدخول.');setRegister(false);setPassword('');setConfirmPassword('');setSignupPhone('');setSignupBirthDate('');setSignupCountry('');setSignupCity('');setSignupGroup('');}
+ async function signUp(e:FormEvent){
+  e.preventDefault();if(!supabase)return;setNotice('');
+  if(fullName.trim().length<3)return setNotice('يرجى كتابة الاسم الكامل');
+  if(!/^\\+?[0-9\\s()-]{7,20}$/.test(signupPhone.trim())||signupPhone.replace(/\\D/g,'').length<7)return setNotice('يرجى إدخال رقم هاتف صحيح');
+  if(!signupBirthDate||signupBirthDate>today())return setNotice('تاريخ الميلاد إلزامي.');
+  if(!signupCountry.trim()||!signupCity.trim())return setNotice('الدولة والمدينة مطلوبتان.');
+  if(signupGroup!=='nabt1'&&signupGroup!=='nabt2')return setNotice('يجب اختيار نبت 1 أو نبت 2.');
+  setSaving(true);
+  try{
+   const {data,error}=await supabase.functions.invoke('submit-nabt-application',{body:{
+    full_name:fullName.trim(),email:email.trim(),phone:signupPhone.trim(),
+    birth_date:signupBirthDate,country:signupCountry.trim(),city:signupCity.trim(),nabt_group:signupGroup
+   }});
+   if(error||!data?.success)throw new Error(typeof data?.error==='string'?data.error:error?.message||'تعذر إرسال الطلب.');
+   setNotice('تم إرسال طلب الانضمام للمديرة. لا يُنشأ حساب دخول إلا عند الموافقة؛ عند القبول تصلك دعوة بالبريد لإعداد الدخول.');
+   setRegister(false);setPassword('');setConfirmPassword('');setSignupPhone('');setSignupBirthDate('');
+   setSignupCountry('');setSignupCity('');setSignupGroup('');
+  }catch(error){setNotice('تعذر إرسال طلب الانضمام: '+(error instanceof Error?error.message:'خطأ غير معروف'));}
+  finally{setSaving(false);}
+ }
  async function saveAttendance(e:FormEvent){e.preventDefault();if(!supabase||!staff)return;
  if(endTime<=startTime){setNotice('وقت النهاية يجب أن يكون بعد وقت البداية');return;}
  setSaving(true);setNotice('');
@@ -477,6 +498,25 @@ async function saveSeries(e:FormEvent){
    setMemberDetailsError(error instanceof Error?error.message:'تعذر تحميل المعلومات الخاصة.');
   }finally{setMemberDetailsLoading(false);}
  }
+ const loadApplications=useCallback(async()=>{
+  if(!supabase)return;
+  const {data,error}=await supabase.functions.invoke('manage-nabt-applications',{body:{action:'list'}});
+  if(!error&&data?.success)setRegistrationRequests((data.applications||[]) as SignupApplication[]);
+ },[]);
+ useEffect(()=>{if(profile?.role==='director'&&profile.active!==false&&profile.approval_status==='approved')void loadApplications();},[profile,loadApplications]);
+ async function processApplication(application:SignupApplication,action:'approve'|'reject'){
+  if(!supabase||!director||saving)return;
+  setSaving(true);setNotice('');
+  try{
+   const {data,error}=await supabase.functions.invoke('manage-nabt-applications',{body:{action,id:application.id}});
+   if(error||!data?.success)throw new Error(typeof data?.error==='string'?data.error:error?.message||'تعذر معالجة الطلب');
+   setRegistrationRequests(current=>current.filter(item=>item.id!==application.id));
+   setApplicationDetails(null);
+   setNotice(action==='reject'?'تم رفض الطلب وحذفه نهائيًا من طلبات الانضمام. يمكنها التقديم من جديد.':'تم قبول الطلب وإنشاء حساب العضوة وإرسال دعوة لتعيين كلمة المرور.');
+   await reload();await loadApplications();
+  }catch(error){setNotice('تعذر معالجة الطلب: '+(error instanceof Error?error.message:'خطأ غير معروف'));}
+  finally{setSaving(false);}
+ }
  async function changeUser(user:Profile,changes:{role?:Profile['role'];active?:boolean;approval_status?:'pending'|'approved'|'rejected'}){if(!supabase||!director||user.id===uid){setNotice('لا يمكن تعديل صلاحية أو حالة حسابك من هذه الصفحة.');return;}if(user.role==='director'&&changes.role&&changes.role!=='director'){setNotice('لا يمكن تخفيض صلاحية مديرة أخرى من هذه الواجهة.');return;}setSaving(true);
  try{
   if(changes.approval_status==='rejected'){
@@ -531,7 +571,7 @@ async function saveSeries(e:FormEvent){
  if(!supabase)return <main className="login"><section className="card"><h1>نبت</h1><p>يرجى ضبط متغيرات Supabase قبل التشغيل.</p></section></main>;
 
  const installBanner=mobileDevice&&!installed&&showInstall?<div className="pwa-banner" role="region" aria-label="تثبيت نبت"><img src="/NABT/nabt-logo.svg" alt=""/><div><strong>ثبّتي نبت على جوالك</strong><p>{installInstructions?(iosDevice?'من زر المشاركة في Safari اختاري «إضافة إلى الشاشة الرئيسية».':'من قائمة المتصفح اختاري «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».'):'استخدمي نبت كتطبيق من الشاشة الرئيسية بسهولة.'}</p><div className="pwa-buttons"><button type="button" className="pwa-install" onClick={()=>void requestInstall()}>{installInstructions?'عرض الإرشادات':'تثبيت نبت'}</button><button type="button" className="pwa-later" onClick={dismissInstall}>لاحقًا</button></div></div></div>:null;
- if(!uid)return <main className="login">{installBanner}<section className="card login-card"><div className="brand-symbol"><img className="theme-brand-logo" src="/NABT/nabt-logo.svg" alt="شعار نبت"/></div><h1>{register?'إنشاء حساب في نبت':'تسجيل الدخول'}</h1><p>{register?'أهلًا بكِ في نبت':'وَأَنْبَتَهَا نَبَاتًا حَسَنًا'}</p><div className="auth-tabs"><button type="button" className={!register?'selected':''} onClick={()=>{setRegister(false);setNotice('')}}>تسجيل الدخول</button><button type="button" className={register?'selected':''} onClick={()=>{setRegister(true);setNotice('')}}>إنشاء حساب</button></div><form onSubmit={register?signUp:login}>{register&&<label>الاسم الكامل<input autoComplete="name" required minLength={3} value={fullName} onChange={e=>setFullName(e.target.value)} placeholder="الاسم الثلاثي"/></label>}{register&&<><label>رقم الهاتف<input required type="tel" dir="ltr" autoComplete="tel" inputMode="tel" value={signupPhone} onChange={e=>setSignupPhone(e.target.value)} placeholder="+249 9XXXXXXXX"/></label><label>تاريخ الميلاد<input required type="date" max={today()} value={signupBirthDate} onChange={e=>setSignupBirthDate(e.target.value)}/></label><label>الدولة<input required autoComplete="country-name" value={signupCountry} onChange={e=>setSignupCountry(e.target.value)} placeholder="مثال: السودان"/></label><label>المدينة<input required autoComplete="address-level2" value={signupCity} onChange={e=>setSignupCity(e.target.value)} placeholder="مثال: الخرطوم"/></label><label>المجموعة<select required value={signupGroup} onChange={e=>setSignupGroup(e.target.value as 'nabt1'|'nabt2'|'')}><option value="">اختاري المجموعة</option><option value="nabt1">نبت 1</option><option value="nabt2">نبت 2</option></select></label></>}<label>البريد الإلكتروني<input required type="email" autoComplete="email" dir="ltr" value={email} onChange={e=>setEmail(e.target.value)} placeholder="name@example.com"/></label><label>كلمة المرور<span className="password-input-wrap"><input required type={showPassword?'text':'password'} minLength={register?8:undefined} autoComplete={register?'new-password':'current-password'} value={password} onChange={e=>setPassword(e.target.value)}/><button type="button" className="password-visibility-toggle" aria-label={showPassword?'إخفاء كلمة المرور':'إظهار كلمة المرور'} aria-pressed={showPassword} title={showPassword?'إخفاء كلمة المرور':'إظهار كلمة المرور'} onClick={()=>setShowPassword(v=>!v)}>{showPassword?<EyeOff size={20}/>:<Eye size={20}/>}</button></span></label>{register&&<label>تأكيد كلمة المرور<span className="password-input-wrap"><input required type={showConfirmPassword?'text':'password'} minLength={8} autoComplete="new-password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)}/><button type="button" className="password-visibility-toggle" aria-label={showConfirmPassword?'إخفاء تأكيد كلمة المرور':'إظهار تأكيد كلمة المرور'} aria-pressed={showConfirmPassword} title={showConfirmPassword?'إخفاء تأكيد كلمة المرور':'إظهار تأكيد كلمة المرور'} onClick={()=>setShowConfirmPassword(v=>!v)}>{showConfirmPassword?<EyeOff size={20}/>:<Eye size={20}/>}</button></span></label>}<button disabled={saving}>{saving?'جارٍ المعالجة...':register?'إنشاء الحساب':'تسجيل الدخول'}</button></form>{!register&&<button type="button" className="resend-link" disabled={saving} onClick={()=>void resendConfirmation()}>لم يصلك رابط التفعيل؟ إعادة الإرسال</button>}{register&&<p className="auth-hint">يُرسل طلب انضمام للمديرة بعد التسجيل، ولا يُسمح بالدخول إلا بعد الموافقة.</p>}{notice&&<p className="auth-notice" role="status">{notice}</p>}</section></main>;
+ if(!uid)return <main className="login">{installBanner}<section className="card login-card"><div className="brand-symbol"><img className="theme-brand-logo" src="/NABT/nabt-logo.svg" alt="شعار نبت"/></div><h1>{register?'طلب الانضمام إلى نبت':'تسجيل الدخول'}</h1><p>{register?'أهلًا بكِ في نبت':'وَأَنْبَتَهَا نَبَاتًا حَسَنًا'}</p><div className="auth-tabs"><button type="button" className={!register?'selected':''} onClick={()=>{setRegister(false);setNotice('')}}>تسجيل الدخول</button><button type="button" className={register?'selected':''} onClick={()=>{setRegister(true);setNotice('')}}>طلب الانضمام</button></div><form onSubmit={register?signUp:login}>{register&&<label>الاسم الكامل<input autoComplete="name" required minLength={3} value={fullName} onChange={e=>setFullName(e.target.value)} placeholder="الاسم الثلاثي"/></label>}{register&&<><label>رقم الهاتف<input required type="tel" dir="ltr" autoComplete="tel" inputMode="tel" value={signupPhone} onChange={e=>setSignupPhone(e.target.value)} placeholder="+249 9XXXXXXXX"/></label><label>تاريخ الميلاد<input required type="date" max={today()} value={signupBirthDate} onChange={e=>setSignupBirthDate(e.target.value)}/></label><label>الدولة<input required autoComplete="country-name" value={signupCountry} onChange={e=>setSignupCountry(e.target.value)} placeholder="مثال: السودان"/></label><label>المدينة<input required autoComplete="address-level2" value={signupCity} onChange={e=>setSignupCity(e.target.value)} placeholder="مثال: الخرطوم"/></label><label>المجموعة<select required value={signupGroup} onChange={e=>setSignupGroup(e.target.value as 'nabt1'|'nabt2'|'')}><option value="">اختاري المجموعة</option><option value="nabt1">نبت 1</option><option value="nabt2">نبت 2</option></select></label></>}<label>البريد الإلكتروني<input required type="email" autoComplete="email" dir="ltr" value={email} onChange={e=>setEmail(e.target.value)} placeholder="name@example.com"/></label>{!register&&<label>كلمة المرور<span className="password-input-wrap"><input required type={showPassword?'text':'password'} minLength={register?8:undefined} autoComplete={register?'new-password':'current-password'} value={password} onChange={e=>setPassword(e.target.value)}/><button type="button" className="password-visibility-toggle" aria-label={showPassword?'إخفاء كلمة المرور':'إظهار كلمة المرور'} aria-pressed={showPassword} title={showPassword?'إخفاء كلمة المرور':'إظهار كلمة المرور'} onClick={()=>setShowPassword(v=>!v)}>{showPassword?<EyeOff size={20}/>:<Eye size={20}/>}</button></span></label>}<button disabled={saving}>{saving?'جارٍ المعالجة...':register?'إرسال طلب الانضمام':'تسجيل الدخول'}</button></form>{!register&&<button type="button" className="resend-link" disabled={saving} onClick={()=>void resendConfirmation()}>لم يصلك رابط التفعيل؟ إعادة الإرسال</button>}{register&&<p className="auth-hint">يُرسل طلب فقط للمديرة دون إنشاء حساب. عند القبول تصلك دعوة بالبريد لتعيين كلمة المرور.</p>}{notice&&<p className="auth-notice" role="status">{notice}</p>}</section></main>;
  if(profile && (profile.approval_status!=='approved'||profile.active===false))return <main className="login"><section className="card login-card"><h1>{profile.approval_status==='rejected'?'تم رفض طلب الانضمام':'طلب الانضمام بانتظار الموافقة'}</h1><p>{profile.approval_status==='rejected'?'لم تتم الموافقة على طلبك. تواصلي مع إدارة نبت.':profile.approval_status==='pending'?'تم استلام طلبك، وستتمكنين من الدخول بعد موافقة المديرة.':'هذا الحساب معطّل حاليًا. تواصلي مع الإدارة.'}</p><button type="button" onClick={()=>void supabase?.auth.signOut()}>تسجيل الخروج</button></section></main>;
  if(!profile)return <main className="profile-loading-screen" role="status" aria-live="polite">{profileLoading||!profileError?<div className="nabt-loading"><span className="nabt-spinner" aria-hidden="true"/><span>جارٍ تحميل حسابك...</span></div>:<div className="nabt-loading-failed"><p>تعذّر الاتصال ببيانات الحساب. تحققي من الإنترنت وحاولي مجددًا.</p><button type="button" onClick={()=>setProfileRetry(v=>v+1)}>إعادة المحاولة</button><button type="button" className="nabt-loading-signout" onClick={()=>void supabase?.auth.signOut()}>تسجيل الخروج</button></div>}</main>;
  return <div className="layout">
@@ -601,18 +641,26 @@ async function saveSeries(e:FormEvent){
   <span>نشطة <strong>{members.filter(m=>m.active!==false).length}</strong></span>
   <span>معطلة <strong>{members.filter(m=>m.active===false).length}</strong></span>
  </div>
- <div className="section-head"><div><h3>طلبات الانضمام الجديدة</h3><p>الطلبات لا تُضاف إلى قائمة العضوات إلا بعد قبولها. الرفض يحذف الطلب وحساب التسجيل ليصبح التقديم من جديد ممكنًا.</p></div></div>
+ <div className="section-head"><div><h3>طلبات الانضمام الجديدة</h3><p>الطلبات لا تُضاف إلى قائمة العضوات إلا بعد قبولها. الرفض يحذف الطلب دون إنشاء حساب؛ القبول فقط ينشئ حساب العضوة.</p></div></div>
  <div className="user-list">
  {registrationRequests.map(m=><article className="user-entry" key={m.id}>
-  <div className="user-card-top"><div className="user-monogram">{(m.full_name||'ن').trim().slice(0,1)}</div>
-   <div className="user-entry-name"><strong>{m.full_name||'طلب انضمام'}</strong><small>المجموعة: {nabtGroupLabel(m.nabt_group)}</small></div>
-   <span className="user-state inactive">بانتظار الموافقة</span>
-  </div>
-  <div className="user-card-controls">
-   <button type="button" disabled={saving} className="user-enable" onClick={()=>setUserConfirm({user:m,changes:{approval_status:'approved',active:true},message:'هل توافقين على انضمام '+(m.full_name||'هذه العضوة')+' إلى '+nabtGroupLabel(m.nabt_group)+'؟'})}><UserCheck size={16}/> قبول الطلب</button>
-   <button type="button" disabled={saving} className="user-disable" onClick={()=>setUserConfirm({user:m,changes:{approval_status:'rejected',active:false},message:'رفض طلب '+(m.full_name||'هذه العضوة')+'؟ سيُحذف طلب التسجيل وحساب الدخول المرتبط به، ويمكنها التقديم مرة أخرى.'})}><UserMinus size={16}/> رفض الطلب</button>
-   <button type="button" className="user-details-btn" onClick={()=>void openMemberDetails(m)}><Eye size={16}/> عرض التفاصيل</button>
-  </div>
+ <div className="user-card-top"><div className="user-monogram">{(m.full_name||'ن').trim().slice(0,1)}</div>
+  <div className="user-entry-name"><strong>{m.full_name}</strong><small>طلب جديد · {nabtGroupLabel(m.nabt_group)}</small></div>
+  <span className="user-state inactive">بانتظار القرار</span>
+ </div>
+ <div className="user-card-controls">
+  <button type="button" disabled={saving} className="user-enable" onClick={()=>void processApplication(m,'approve')}><UserCheck size={16}/> قبول الطلب</button>
+  <button type="button" disabled={saving} className="user-disable" onClick={()=>{if(window.confirm('رفض وحذف طلب انضمام '+m.full_name+'؟ يمكنها التقديم من جديد.'))void processApplication(m,'reject')}}><UserMinus size={16}/> رفض الطلب</button>
+  <button type="button" className="user-details-btn" onClick={()=>setApplicationDetails(current=>current?.id===m.id?null:m)}><Eye size={16}/> {applicationDetails?.id===m.id?'إخفاء التفاصيل':'عرض التفاصيل'}</button>
+ </div>
+ {applicationDetails?.id===m.id&&<div className="member-detail-section"><h3>بيانات طلب الانضمام (لم يتم إنشاء حساب بعد)</h3><dl>
+  <div><dt>البريد الإلكتروني</dt><dd dir="ltr">{m.email}</dd></div>
+  <div><dt>الهاتف</dt><dd dir="ltr">{m.phone}</dd></div>
+  <div><dt>المجموعة</dt><dd>{nabtGroupLabel(m.nabt_group)}</dd></div>
+  <div><dt>تاريخ الميلاد</dt><dd>{m.birth_date}</dd></div>
+  <div><dt>الدولة</dt><dd>{m.country}</dd></div>
+  <div><dt>المدينة</dt><dd>{m.city}</dd></div>
+ </dl></div>}
  </article>)}
  {!registrationRequests.length&&<p className="auth-hint">لا توجد طلبات انضمام معلقة حاليًا.</p>}
  </div>
