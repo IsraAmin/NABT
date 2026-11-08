@@ -99,7 +99,7 @@ export default function App(){
  const [memberPrivateDetails,setMemberPrivateDetails]=useState<PrivateMemberDetails|null>(null);
  const [memberDetailsLoading,setMemberDetailsLoading]=useState(false);
  const [memberDetailsError,setMemberDetailsError]=useState('');
- const [userConfirm,setUserConfirm]=useState<{user:Profile;changes:{role?:Profile['role'];active?:boolean};message:string}|null>(null);
+ const [userConfirm,setUserConfirm]=useState<{user:Profile;changes:{role?:Profile['role'];active?:boolean;approval_status?:'pending'|'approved'|'rejected'};message:string}|null>(null);
  const [deleteMemberConfirm,setDeleteMemberConfirm]=useState<Profile|null>(null);
  const [deleteMemberName,setDeleteMemberName]=useState('');
  const [university,setUniversity]=useState(''),[birthDate,setBirthDate]=useState(''),[profileCountry,setProfileCountry]=useState(''),[profileCity,setProfileCity]=useState('');
