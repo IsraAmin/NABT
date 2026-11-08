@@ -1,14 +1,20 @@
 NABT build diagnostics
-Source commit: d0c687bfef7a90829b3d90e0cb8990f4062cce2e
-Exit code: 1
+Source commit: 79a8be6163f7bd57816dd9e96c189a02fbde0931
+Exit code: 0
 --- Last 100 build log lines ---
 npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
-added 364 packages in 12s
+added 364 packages in 17s
 
 > nabt@0.1.0 build
 > tsc -b && vite build
 
-src/App.tsx(599,3): error TS17008: JSX element 'main' has no corresponding closing tag.
-src/App.tsx(753,3040): error TS17002: Expected corresponding JSX closing tag for 'section'.
-src/App.tsx(753,3045): error TS1005: '}' expected.
+[36mvite v7.3.7 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 1637 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                 [39m[1m[2m  2.78 kB[22m[1m[22m[2m │ gzip:  1.42 kB[22m
+[2mdist/[22m[2massets/[22m[35mindex-BRgFvkJt.css  [39m[1m[2m124.05 kB[22m[1m[22m[2m │ gzip: 22.82 kB[22m
+[2mdist/[22m[2massets/[22m[36mindex-aAIzPndG.js   [39m[1m[2m266.18 kB[22m[1m[22m[2m │ gzip: 84.77 kB[22m
+[32m✓ built in 1.65s[39m
