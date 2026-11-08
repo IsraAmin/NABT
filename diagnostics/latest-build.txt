@@ -1,14 +1,14 @@
 NABT build diagnostics
-Source commit: f89cfe658264fdc7cd35ef4613bcb5d4d5243474
+Source commit: d0c687bfef7a90829b3d90e0cb8990f4062cce2e
 Exit code: 1
 --- Last 100 build log lines ---
 npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
-added 364 packages in 15s
+added 364 packages in 12s
 
 > nabt@0.1.0 build
 > tsc -b && vite build
 
-src/App.tsx(559,3): error TS17008: JSX element 'main' has no corresponding closing tag.
-src/App.tsx(705,3040): error TS17002: Expected corresponding JSX closing tag for 'section'.
-src/App.tsx(705,3045): error TS1005: '}' expected.
+src/App.tsx(599,3): error TS17008: JSX element 'main' has no corresponding closing tag.
+src/App.tsx(753,3040): error TS17002: Expected corresponding JSX closing tag for 'section'.
+src/App.tsx(753,3045): error TS1005: '}' expected.
