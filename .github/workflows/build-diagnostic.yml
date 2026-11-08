@@ -1,0 +1,47 @@
+name: Diagnose NABT production build
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'diagnostics/latest-build.txt'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and capture errors
+        shell: bash
+        run: |
+          set +e
+          npm install --no-audit --no-fund > /tmp/nabt-build.log 2>&1
+          install_exit=$?
+          if [ "$install_exit" -eq 0 ]; then
+            npm run build >> /tmp/nabt-build.log 2>&1
+            build_exit=$?
+          else
+            build_exit="$install_exit"
+          fi
+          mkdir -p diagnostics
+          {
+            echo "NABT build diagnostics"
+            echo "Source commit: $GITHUB_SHA"
+            echo "Exit code: $build_exit"
+            echo "--- Last 100 build log lines ---"
+            tail -n 100 /tmp/nabt-build.log
+          } > diagnostics/latest-build.txt
+          echo "Build status: $build_exit"
+      - name: Commit build report
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add diagnostics/latest-build.txt
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: record NABT build diagnostic [skip ci]"
+          git push origin HEAD:main
