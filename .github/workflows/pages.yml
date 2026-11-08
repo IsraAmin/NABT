@@ -1,4 +1,5 @@
 name: Deploy NABT to GitHub Pages
+run-name: NABT Pages • ${{ github.sha }}
 on:
   push:
     branches: [main]
@@ -26,10 +27,15 @@ jobs:
         run: |
           python3 -m pip install --quiet --break-system-packages Pillow cairosvg
           python3 scripts/generate_pwa_icons.py
-      - run: npm run build
+      - name: Type-check and build production site
+        run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://cieyyciklonkmeadgnzq.supabase.co' }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY || 'sb_publishable_8Ne9X-9H8H0XHQD7Og-Ylg_5A1thhO6' }}
+      - name: Confirm production artifact exists
+        run: |
+          test -s dist/index.html
+          test -d dist/assets
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
