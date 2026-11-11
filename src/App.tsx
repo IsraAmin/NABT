@@ -387,22 +387,21 @@ async function saveSeries(e:FormEvent){
  const csv='\uFEFF'+[headers,...rows].map(x=>x.map(csvCell).join(',')).join('\r\n');
  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='nabt-attendance-'+(exportFrom||'all')+'-'+(exportTo||today())+'.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);setNotice('تم تجهيز التقرير الملخص: '+rows.length+' جلسة.');
  }catch(error){setNotice('تعذر تصدير الحضور: '+(error instanceof Error?error.message:'تحققي من الاتصال والصلاحيات'));}finally{setExportingAttendance(false);}}
- const getEngagement=(memberId:string)=>{
-  // Use every ended session loaded from the database, never the 12-card home carousel.
-  const endedIds=new Set(sessions.filter(sessionEnded).map(x=>String(x.id)));
-  const attendedIds=new Set<string>();
-  const compensatedIds=new Set<string>();
-  for(const r of responses){
-   if(String(r.member_id)!==String(memberId)||!endedIds.has(String(r.session_id)))continue;
-   if(r.response==='attended')attendedIds.add(String(r.session_id));
-   else if(r.response==='compensated')compensatedIds.add(String(r.session_id));
+ const getEngagement=(memberId:string,forGroup?:string)=>{
+  // Only sessions assigned to the member's group count toward attendance.
+  const member=members.find(m=>m.id===memberId)||(profile?.id===memberId?profile:null);
+  const entitled=forGroup?[forGroup]:member?.role==='director'?['nabt1','nabt2']:member?.role==='admin'?(member.supervisor_groups||['nabt1']):[member?.nabt_group||'nabt1'];
+  const endedIds=new Set(sessions.filter(x=>sessionEnded(x)&&x.nabt_groups.some(g=>entitled.includes(g))).map(x=>String(x.id)));
+  const attendedIds=new Set<string>(),compensatedIds=new Set<string>();
+  for(const response of responses){
+   if(String(response.member_id)!==String(memberId)||!endedIds.has(String(response.session_id)))continue;
+   if(response.response==='attended')attendedIds.add(String(response.session_id));
+   else if(response.response==='compensated')compensatedIds.add(String(response.session_id));
   }
-  const attended=attendedIds.size;
-  const compensated=[...compensatedIds].filter(id=>!attendedIds.has(id)).length;
-  // An accepted compensation counts toward the profile percentage like attendance, but remains a separate type in reports.
-  const completedSessions=new Set([...attendedIds,...compensatedIds]).size;
-  const rate=endedIds.size?Math.round(Math.min(completedSessions,endedIds.size)/endedIds.size*100):null;
-  return {done:attended,compensated,total:endedIds.size,rate,color:rate===null?'neutral':rate>=90?'green':rate>=50?'orange':'red'};
+  const done=attendedIds.size,compensated=[...compensatedIds].filter(id=>!attendedIds.has(id)).length;
+  const total=endedIds.size;
+  const rate=total?Math.round(Math.min((done+compensated)/total,1)*100):null;
+  return {done,compensated,total,rate,color:rate===null?'neutral':rate>=90?'green':rate>=50?'orange':'red'};
  };
  async function exportSystemBackup(){if(!supabase||!director)return;setSaving(true);setNotice('جارٍ تجهيز نسخة البيانات...');try{const fetchAll=async(table:string,fields:string)=>{const data:unknown[]=[];for(let from=0;from<100000;from+=1000){const response=await supabase!.from(table).select(fields).range(from,from+999);if(response.error)throw response.error;const batch=response.data||[];data.push(...batch);if(batch.length<1000)break;}return data;};const [profilesData,booksData,sessionsData,responsesData,attendanceData]=await Promise.all([fetchAll('profiles','id,full_name,role,active'),fetchAll('books','*'),fetchAll('sessions','*'),fetchAll('session_responses','*'),fetchAll('attendance','*')]);const payload={format:'nabt-admin-export-v1',generated_at:new Date().toISOString(),profiles:profilesData,books:booksData,sessions:sessionsData,session_responses:responsesData,legacy_attendance:attendanceData};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob);const anchor=document.createElement('a');anchor.href=url;anchor.download='nabt-backup-'+today()+'.json';document.body.append(anchor);anchor.click();anchor.remove();URL.revokeObjectURL(url);setNotice('تم تجهيز ملف تصدير البيانات. احفظيه في مكان آمن.');}catch(error){setNotice('تعذر تجهيز النسخة: '+(error instanceof Error?error.message:'تحققي من صلاحيات البيانات والاتصال'));}finally{setSaving(false);}}
  const [responses,setResponses]=useState<SessionResponse[]>([]),[compensating,setCompensating]=useState<string|null>(null),[compText,setCompText]=useState('');
@@ -638,7 +637,7 @@ async function saveSeries(e:FormEvent){
  }
  const groupMetrics=(group:'nabt1'|'nabt2')=>{
   const groupMembers=members.filter(m=>m.nabt_group===group&&m.active!==false);
-  const engagement=groupMembers.map(m=>getEngagement(m.id));
+  const engagement=groupMembers.map(m=>getEngagement(m.id,group));
   const rates=engagement.map(e=>e.rate).filter((v):v is number=>v!==null);
   return {members:groupMembers.length,pending:registrationRequests.filter(m=>m.nabt_group===group).length,
     attended:engagement.reduce((a,e)=>a+e.done,0),compensated:engagement.reduce((a,e)=>a+e.compensated,0),
