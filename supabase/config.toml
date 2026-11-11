@@ -1,0 +1,2 @@
+[functions.share-video]
+verify_jwt = false
