@@ -7,8 +7,18 @@ ALTER TABLE public.resource_videos
 ALTER TABLE public.resource_videos
   ADD CONSTRAINT resource_videos_valid_source
   CHECK (
-    (youtube_id IS NOT NULL AND youtube_id ~ '^[A-Za-z0-9_-]{11}$')
-    OR (source_url IS NOT NULL AND source_url LIKE 'https://drive.google.com/file/d/%/view')
+    (youtube_id IS NOT NULL AND youtube_id ~ '^[A-Za-z0-9_-]{11}
+-- IMPORTANT: The existing list_lecture_videos RPC returns an explicit column
+-- signature in some deployments. Ensure it includes source_url in its response
+-- before deploying the frontend; replace the RPC using its current SQL definition
+-- and preserve its visibility/role checks. Do not expose hidden videos publicly.
+)
+    OR (source_url IS NOT NULL AND source_url ~ '^https://drive[.]google[.]com/file/d/[A-Za-z0-9_-]+/view
+-- IMPORTANT: The existing list_lecture_videos RPC returns an explicit column
+-- signature in some deployments. Ensure it includes source_url in its response
+-- before deploying the frontend; replace the RPC using its current SQL definition
+-- and preserve its visibility/role checks. Do not expose hidden videos publicly.
+)
   );
 -- IMPORTANT: The existing list_lecture_videos RPC returns an explicit column
 -- signature in some deployments. Ensure it includes source_url in its response
