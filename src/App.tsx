@@ -263,7 +263,7 @@ const matchSearch=(query:string,...fields:(string|null|undefined)[])=>!normSearc
   const {error}=editingVideoId?await supabase.from('resource_videos').update(payload).eq('id',editingVideoId):await supabase.from('resource_videos').insert(payload);
   setSaving(false);
   if(error){setNotice('تعذر حفظ المرئية: '+error.message);return;}
-  setNotice(editingVideoId?'تم تعديل الفيديو بنجاح.':'تمت إضافة الفيديو إلى المصادر.');
+  setNotice(editingVideoId?'تم تعديل الفيديو بنجاح.':'تمت إضافة الفيديو إلى المصادر: '+scopeLabel(videoTargetGroups));
   resetVideoEditor();setVideoManageMode('browse');await reloadVideos();
  }
  async function manageVideo(video:ResourceVideo,action:'toggle'|'delete'){
@@ -530,15 +530,20 @@ async function saveSeries(e:FormEvent){
   finally{setSaving(false);}
  }
  async function saveAttendance(e:FormEvent){e.preventDefault();if(!supabase||!staff)return;
+ const targetGroups=allowScopeChange?sessionTargetGroups:staffGroups;
+ if(!targetGroups.length)return setNotice('يجب تحديد مجموعة للجلسة.');
+ if(!targetGroups.every(g=>staffGroups.includes(g)))return setNotice('لا يمكنك إضافة جلسة خارج المجموعات المصرّح لك بها.');
+ if(editingSessionId){const source=sessions.find(x=>x.id===editingSessionId);if(!source||!source.nabt_groups.every(g=>staffGroups.includes(g)))return setNotice('ليس لديك صلاحية تعديل هذه الجلسة.');}
+
  if(endTime<=startTime){setNotice('وقت النهاية يجب أن يكون بعد وقت البداية');return;}
  setSaving(true);setNotice('');
- const existing=sessions.find(s=>s.session_date===date&&s.study_type===studyType&&s.book_id===(bookId||null));
+ const existing=sessions.find(s=>s.session_date===date&&s.study_type===studyType&&s.book_id===(bookId||null)&&JSON.stringify([...s.nabt_groups].sort())===JSON.stringify([...targetGroups].sort()));
  if(existing&&!editingSessionId){setNotice('الجلسة موجودة مسبقًا. افتحيها من السجلات لتعديلها.');setSaving(false);return;}
- if(editingSessionId){const {error}=await supabase.from('sessions').update({session_date:date,study_type:studyType,book_id:bookId||null,description:sessionDescription.trim()||null,start_time:startTime,end_time:endTime}).eq('id',editingSessionId);setNotice(error?'تعذر تعديل الجلسة: '+error.message:'تم حفظ تعديلات الجلسة');if(!error){setEditingSessionId(null);setSessionDescription('');await reload();}setSaving(false);return;}
- const {data:session,error}=await supabase.from('sessions').insert({session_date:date,study_type:studyType,book_id:bookId||null,description:sessionDescription.trim()||null,start_time:startTime,end_time:endTime,created_by:uid}).select('id').single();
+ if(editingSessionId){const {error}=await supabase.from('sessions').update({session_date:date,study_type:studyType,book_id:bookId||null,description:sessionDescription.trim()||null,start_time:startTime,end_time:endTime,nabt_groups:targetGroups}).eq('id',editingSessionId);setNotice(error?'تعذر تعديل الجلسة: '+error.message:'تم حفظ تعديلات الجلسة');if(!error){setEditingSessionId(null);setSessionDescription('');await reload();}setSaving(false);return;}
+ const {data:session,error}=await supabase.from('sessions').insert({session_date:date,study_type:studyType,book_id:bookId||null,description:sessionDescription.trim()||null,start_time:startTime,end_time:endTime,nabt_groups:targetGroups,created_by:uid}).select('id').single();
  if(error||!session){setNotice('تعذر إنشاء الجلسة: '+(error?.message||''));setSaving(false);return;}
  const newSessionNotice=await supabase.from('announcements').insert({
-  title:'جلسة جديدة في نبت',body:'تمت إضافة جلسة '+studyType+' بتاريخ '+date+' من '+startTime+' إلى '+endTime+'.',created_by:uid
+  title:'جلسة جديدة في '+scopeLabel(targetGroups),body:'تمت إضافة جلسة '+studyType+' بتاريخ '+date+' من '+startTime+' إلى '+endTime+'.',nabt_groups:targetGroups,created_by:uid
  });
  setNotice(newSessionNotice.error?'تمت إضافة الجلسة، لكن تعذّر إرسال إشعارها: '+newSessionNotice.error.message:'تمت إضافة الجلسة وإشعار العضوات داخل نبت.');
  setSessionDescription('');void refreshNotifications();
