@@ -39,3 +39,14 @@ React 19 + TypeScript + Vite + Supabase PostgreSQL / Auth / RLS. الواجهة 
 - الصور تضغط في المتصفح إلى 50 KiB أو أقل قبل رفعها إلى nabt-avatars. يتطلب ذلك تطبيق SQL الموجود في supabase/migrations/20261015_nabt_avatar_storage.sql من SQL Editor؛ لم يطبّق تلقائيًا.
 - تفاصيل الاسم والنبذة والتواصل محفوظة في Supabase Auth user_metadata؛ لا توضع كلمة المرور في تلك البيانات.
 - لن تظهر أدوات الإدارة حتى يتغير دور الحساب إلى director من إعداد إداري موثوق.
+
+
+## مشاركة فيديوهات Google Drive وواتساب (قيد النشر)
+- واجهة المرئيات تدعم روابط YouTube وروابط ملفات Google Drive، مع زر مشاركة واتساب وعرض الدروس.
+- قبل الدمج: طبّقي `supabase/migrations/20261111_drive_video_sources.sql` في **مشروع NABT فقط**. افحصي قيود الجدول الموجودة أولًا، ولا تشغّلي migration مرتين دون التحقق من القيد. قاعدة البيانات ليست متاحة لهذا الاتصال.
+- تأكدي أن تعريف `list_lecture_videos` يعرض فيديوهات Drive حتى عندما يكون `youtube_id` فارغًا، وأن المستخدم المخوّل يمكنه قراءة `source_url` من الجدول وفق RLS. احفظي قواعد إخفاء المرئيات المقفلة.
+- انشري `supabase/functions/share-video` على مشروع NABT باستخدام `supabase functions deploy share-video --project-ref cieyyciklonkmeadgnzq`. ملف `supabase/config.toml` يضبط `verify_jwt=false` لخدمة معاينة عامة؛ الدالة تتحقق من نشر الفيديو وإتاحته قبل إخراج metadata.
+- اضبطي سر الدالة `NABT_SITE_URL` على العنوان العام الصحيح للمنصة إن اختلف عن `https://israamin.github.io/NABT/`.
+- بعد نجاح نشر الدالة، اضبطي متغير البناء `VITE_VIDEO_SHARE_ENDPOINT=https://cieyyciklonkmeadgnzq.supabase.co/functions/v1/share-video` ثم أعيدي بناء الموقع ونشره. بدونه يستخدم الزر رابط صفحة React مباشرة، ولا يضمن WhatsApp صورة معاينة خاصة بالفيديو.
+- **مهم:** صفحة معاينة الفيديو المنشور والمتاح تكشف عنوانه ووصفه المصغّر علنًا لمن يعرف الرابط؛ لا تنشري فيديوهات سرية أو روابط Google Drive غير المصرح بمشاركتها. ينبغي إعطاء المشاهدات المستهدفة صلاحية قراءة ملف Drive، والأفضل استخدام صورة مصغّرة عامة؛ معاينة ملفات Drive قد لا تظهر في WhatsApp عند حظر الصور.
+- تحققي بعد النشر من `og:title`, `og:description`, `og:image` داخل HTML الأولي للدالة، ومن معاينة واتساب على الجوال، واختبري الفيديوهات المخفية والمقفلة.
