@@ -122,6 +122,7 @@ export default function App(){
  const [showPassword,setShowPassword]=useState(false),[showConfirmPassword,setShowConfirmPassword]=useState(false);
  const [signupGroup,setSignupGroup]=useState<'nabt1'|'nabt2'|''>('');
  const [signupPhone,setSignupPhone]=useState(''),[signupBirthDate,setSignupBirthDate]=useState(''),[signupCountry,setSignupCountry]=useState(''),[signupCity,setSignupCity]=useState('');
+ const processedApplicationIds=useRef(new Set<string>());
  const [registrationRequests,setRegistrationRequests]=useState<SignupApplication[]>([]);
  const [applicationDetails,setApplicationDetails]=useState<SignupApplication|null>(null);
  const [members,setMembers]=useState<Profile[]>([]),[books,setBooks]=useState<Book[]>([]),[sessions,setSessions]=useState<Session[]>([]),[attendance,setAttendance]=useState<Attendance[]>([]);
@@ -590,7 +591,7 @@ async function saveSeries(e:FormEvent){
  const loadApplications=useCallback(async()=>{
   if(!supabase)return;
   const {data,error}=await supabase.functions.invoke('manage-nabt-applications',{body:{action:'list'}});
-  if(!error&&data?.success)setRegistrationRequests((data.applications||[]) as SignupApplication[]);
+  if(!error&&data?.success)setRegistrationRequests(((data.applications||[]) as SignupApplication[]).filter(x=>!processedApplicationIds.current.has(x.id)));
  },[]);
  useEffect(()=>{if(profile?.role==='director'&&profile.active!==false&&profile.approval_status==='approved')void loadApplications();},[profile,loadApplications]);
 
@@ -628,9 +629,10 @@ async function saveSeries(e:FormEvent){
   try{
    const {data,error}=await supabase.functions.invoke('manage-nabt-applications',{body:{action,id:application.id}});
    if(error||!data?.success)throw new Error(await readableFunctionError(error,data,'تعذر معالجة الطلب'));
+   processedApplicationIds.current.add(application.id);
    setRegistrationRequests(current=>current.filter(item=>item.id!==application.id));
    setApplicationDetails(null);
-   setNotice(action==='reject'?'تم رفض الطلب وحذفه من قائمة الانتظار. يمكنها تقديم طلب جديد.':'تم قبول الطلب، وحُذف من قائمة الانتظار وانتقل الحساب إلى العضوات المقبولات. أُرسلت دعوة تعيين كلمة المرور.');
+   setNotice(typeof data?.message==='string'?data.message:(action==='reject'?'تم رفض الطلب وحذفه من قائمة الانتظار.':'تم قبول الطلب وحذفه من قائمة الانتظار.'));
    await reload();await loadApplications();
   }catch(error){setNotice('تعذر معالجة الطلب: '+(error instanceof Error?error.message:'خطأ غير معروف'));}
   finally{setSaving(false);}
