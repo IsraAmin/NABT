@@ -67,3 +67,27 @@ jobs:
           echo "::error::Live page is not referencing the built Vite JS. Check GitHub Pages Source and deployed content."
           head -c 1200 /tmp/nabt-live.html || true
           exit 1
+
+      - name: Verify video sharing deployed to public site
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="https://cieyyciklonkmeadgnzq.supabase.co/functions/v1/share-video?id=00000000-0000-0000-0000-000000000000"
+          STATUS=$(curl -sS --max-time 20 -o /dev/null -w '%{http_code}' "$URL")
+          test "$STATUS" = "404" || { echo "::error::Public share-video endpoint returned $STATUS instead of 404 for nonexistent video"; exit 1; }
+          echo "Video sharing Edge Function responds and hides missing videos."
+          for attempt in {1..10}; do
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "https://israamin.github.io/NABT/?video-check=${GITHUB_SHA}" -o /tmp/nabt-video.html
+            ASSET=$(grep -oE 'src="/NABT/assets/[^" ]+\.js"' /tmp/nabt-video.html | head -1 | cut -d'"' -f2)
+            if [ -n "$ASSET" ]; then
+              curl -fsSL --max-time 20 "https://israamin.github.io$ASSET" -o /tmp/nabt-video.js
+              if grep -q 'مشاركة واتساب' /tmp/nabt-video.js; then
+                echo "Deployed JavaScript includes WhatsApp video sharing."
+                exit 0
+              fi
+            fi
+            echo "Waiting for latest video-sharing assets (attempt $attempt)"
+            sleep 10
+          done
+          echo '::error::Published JavaScript does not contain the video-share control.'
+          exit 1
