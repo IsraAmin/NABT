@@ -91,3 +91,18 @@ jobs:
           done
           echo '::error::Published JavaScript does not contain the video-share control.'
           exit 1
+
+      - name: Verify WhatsApp previews redirect people to the actual lesson
+        shell: bash
+        run: |
+          set -euo pipefail
+          VIDEO_ID="3ecd89ce-50bb-476a-993c-ac7766fecc63"
+          LINK="https://cieyyciklonkmeadgnzq.supabase.co/functions/v1/share-video?id=${VIDEO_ID}"
+          STATUS=$(curl -sS --max-time 20 -o /dev/null -D /tmp/nabt-human-headers.txt -w '%{http_code}' -H 'User-Agent: Mozilla/5.0 (Android 15; Mobile)' "$LINK")
+          test "$STATUS" = "302" || { echo "::error::Human share link returned $STATUS instead of 302"; exit 1; }
+          grep -qi "location: https://israamin.github.io/NABT/#lesson/${VIDEO_ID}" /tmp/nabt-human-headers.txt
+          BOT_STATUS=$(curl -sS --max-time 20 -o /tmp/nabt-share-preview.html -w '%{http_code}' -H 'User-Agent: facebookexternalhit/1.1' "$LINK")
+          test "$BOT_STATUS" = "200" || { echo "::error::WhatsApp crawler returned $BOT_STATUS"; exit 1; }
+          grep -q 'property="og:title"' /tmp/nabt-share-preview.html
+          grep -q 'property="og:image"' /tmp/nabt-share-preview.html
+          echo "Success: browser gets direct lesson redirect, social crawler gets rich preview."
