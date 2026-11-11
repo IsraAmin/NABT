@@ -207,8 +207,11 @@ export default function App(){
  const reloadVideos=useCallback(async()=>{
   if(!supabase)return;
   const {data,error}=await supabase.rpc('list_lecture_videos');
-  if(error)setNotice('تعذر تحميل المرئيات: '+error.message);
-  else setResourceVideos((data||[]) as ResourceVideo[]);
+  if(error){setNotice('تعذر تحميل المرئيات: '+error.message);return;}
+  const videos=(data||[]) as ResourceVideo[];
+  const sources=await supabase.from('resource_videos').select('id,source_url');
+  const byId=new Map((sources.data||[]).map(v=>[v.id,v.source_url as string|null]));
+  setResourceVideos(videos.map(v=>({...v,source_url:v.source_url??byId.get(v.id)??null})));
  },[]);
  useEffect(()=>{if(uid&&profile)void reloadVideos();},[uid,profile,reloadVideos]);
  useEffect(()=>{const hash=decodeURIComponent(window.location.hash.slice(1));if(hash.startsWith('series/'))setOpenedSeries(hash.slice(7));if(hash.startsWith('lesson/')){const video=resourceVideos.find(x=>x.id===hash.slice(7));if(video&&video.access_status==='available'&&video.is_published)setWatchVideo(video);else if(video){setWatchVideo(null);setView(video.series_id?'series':'books');if(video.series_id)setOpenedSeries(video.series_id);else setResourceTab('videos');window.location.hash=video.series_id?'series/'+video.series_id:'books';}}},[view,resourceVideos]);
