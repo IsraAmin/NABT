@@ -1,10 +1,10 @@
 NABT build diagnostics
-Source commit: bbb048c0115627bc1b9156b82cf8344e45bd10e0
+Source commit: 2f95ae8d3639b43c658d0b6802c2dc3496031539
 Exit code: 0
 --- Last 100 build log lines ---
 npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
-added 364 packages in 16s
+added 364 packages in 11s
 
 > nabt@0.1.0 build
 > tsc -b && vite build
@@ -16,5 +16,5 @@ rendering chunks...
 computing gzip size...
 [2mdist/[22m[32mindex.html                 [39m[1m[2m  2.78 kB[22m[1m[22m[2m │ gzip:  1.42 kB[22m
 [2mdist/[22m[2massets/[22m[35mindex-BRgFvkJt.css  [39m[1m[2m124.05 kB[22m[1m[22m[2m │ gzip: 22.82 kB[22m
-[2mdist/[22m[2massets/[22m[36mindex-BFMWWdL4.js   [39m[1m[2m266.85 kB[22m[1m[22m[2m │ gzip: 85.04 kB[22m
-[32m✓ built in 1.54s[39m
+[2mdist/[22m[2massets/[22m[36mindex-DI7HRxvx.js   [39m[1m[2m266.88 kB[22m[1m[22m[2m │ gzip: 85.04 kB[22m
+[32m✓ built in 1.58s[39m
