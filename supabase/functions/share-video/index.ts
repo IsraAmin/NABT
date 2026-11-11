@@ -23,12 +23,21 @@ Deno.serve(async request=>{
   const site=(Deno.env.get('NABT_SITE_URL')||'https://israamin.github.io/NABT/').replace(/\/?$/,'/');
   const target=new URL(site);
   target.hash='lesson/'+id;
+  // WhatsApp/Meta preview crawlers receive Open Graph HTML.
+  // Human visitors must get a real HTTP redirect: script-based redirects
+  // are frequently blocked by WhatsApp's in-app browser.
+  const agent=request.headers.get('user-agent')||'';
+  const isCrawler=/(?:facebookexternalhit|facebot|whatsapp|twitterbot|linkedinbot|telegrambot|slackbot|discordbot|googlebot|bingbot)/i.test(agent);
+  const browserNavigation=request.headers.get('sec-fetch-mode')==='navigate'||request.headers.get('sec-fetch-dest')==='document';
+  if(request.method==='GET' && (browserNavigation || !isCrawler)){
+   return Response.redirect(target.href,302);
+  }
   const url=input.origin+input.pathname+'?id='+encodeURIComponent(id);
   const title=escapeHtml(video.title+' | نَبْت');
   const desc=escapeHtml((video.description||'شاهدي هذا الدرس من مرئيات منصة نَبْت').slice(0,450));
   const driveId=typeof video.source_url==='string'?video.source_url.match(/^https:\/\/drive\.google\.com\/file\/d\/([\w-]+)\/view$/)?.[1]:null;
   const image=driveId?'https://drive.google.com/thumbnail?id='+encodeURIComponent(driveId)+'&sz=w640':/^[\w-]{11}$/.test(video.youtube_id||'')?'https://i.ytimg.com/vi/'+video.youtube_id+'/hqdefault.jpg':new URL('icons/apple-touch-icon.png',site).href;
-  const document=`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><meta name="description" content="${desc}"><meta property="og:type" content="video.other"><meta property="og:title" content="${title}"><meta property="og:description" content="${desc}"><meta property="og:url" content="${escapeHtml(url)}"><meta property="og:image" content="${escapeHtml(image)}"><meta name="twitter:card" content="summary_large_image"></head><body><main><h1>${title}</h1><p>${desc}</p><p><a href="${escapeHtml(target.href)}">فتح الدرس في منصة نَبْت</a></p></main><script>location.replace(${JSON.stringify(target.href).replace(/</g,'\\u003c')});</script></body></html>`;
+  const document=`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><meta name="description" content="${desc}"><meta property="og:type" content="video.other"><meta property="og:title" content="${title}"><meta property="og:description" content="${desc}"><meta property="og:url" content="${escapeHtml(url)}"><meta property="og:image" content="${escapeHtml(image)}"><meta name="twitter:card" content="summary_large_image"><meta http-equiv="refresh" content="0;url=${escapeHtml(target.href)}"></head><body><main><h1>${title}</h1><p>${desc}</p><p><a href="${escapeHtml(target.href)}">اضغطي هنا لفتح الدرس في منصة نَبْت</a></p></main><script>window.location.replace(${JSON.stringify(target.href).replace(/</g,'\\u003c')});</script></body></html>`;
   return new Response(request.method==='HEAD'?null:document,{status:200,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'public, max-age=120'}});
  }catch{return new Response('Unavailable',{status:503});}
 });
