@@ -209,10 +209,17 @@ export default function App(){
   const {data,error}=await supabase.rpc('list_lecture_videos');
   if(error){setNotice('تعذر تحميل المرئيات: '+error.message);return;}
   const videos=(data||[]) as ResourceVideo[];
-  const sources=await supabase.from('resource_videos').select('id,source_url');
-  const byId=new Map((sources.data||[]).map(v=>[v.id,v.source_url as string|null]));
-  setResourceVideos(videos.map(v=>({...v,source_url:v.source_url??byId.get(v.id)??null})));
- },[]);
+  // Read through the database's RLS policies, then merge Drive videos that
+  // older list_lecture_videos functions may omit when youtube_id is NULL.
+  const sources=await supabase.from('resource_videos').select('*').not('source_url','is',null);
+  const driveRows=((sources.data||[]) as ResourceVideo[]).filter(v=>
+   Boolean(v.source_url&&driveVideoId(v.source_url)) &&
+   (profile?.role==='admin'||profile?.role==='director'||(v.is_published&&v.access_status!=='hidden'))
+  );
+  const byId=new Map(driveRows.map(v=>[v.id,v]));
+  setResourceVideos([...videos.map(v=>({...v,source_url:v.source_url??byId.get(v.id)?.source_url??null})),
+   ...driveRows.filter(v=>!videos.some(existing=>existing.id===v.id))]);
+ },[profile?.role]);
  useEffect(()=>{if(uid&&profile)void reloadVideos();},[uid,profile,reloadVideos]);
  useEffect(()=>{const hash=decodeURIComponent(window.location.hash.slice(1));if(hash.startsWith('series/'))setOpenedSeries(hash.slice(7));if(hash.startsWith('lesson/')){const video=resourceVideos.find(x=>x.id===hash.slice(7));if(video&&video.access_status==='available'&&video.is_published)setWatchVideo(video);else if(video){setWatchVideo(null);setView(video.series_id?'series':'books');if(video.series_id)setOpenedSeries(video.series_id);else setResourceTab('videos');window.location.hash=video.series_id?'series/'+video.series_id:'books';}}},[view,resourceVideos]);
  function resetVideoEditor(){
