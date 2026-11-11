@@ -1,10 +1,10 @@
 NABT build diagnostics
-Source commit: ce7731399204f3ce27a521796eac8107281bf189
+Source commit: e13bfb41729dd3872ae9cee2714c6f62e9192438
 Exit code: 0
 --- Last 100 build log lines ---
 npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
-added 364 packages in 15s
+added 364 packages in 16s
 
 > nabt@0.1.0 build
 > tsc -b && vite build
