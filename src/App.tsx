@@ -30,7 +30,7 @@ const driveVideoId=(raw:string):string|null=>{try{const u=new URL(raw.trim());if
 const videoProvider=(video:ResourceVideo)=>video.source_url&&driveVideoId(video.source_url)?'drive':'youtube';
 const videoLink=(video:ResourceVideo)=>videoProvider(video)==='drive'?video.source_url!:'https://www.youtube.com/watch?v='+video.youtube_id;
 const videoThumbnail=(video:ResourceVideo)=>videoProvider(video)==='drive'?'https://drive.google.com/thumbnail?id='+driveVideoId(video.source_url!)+'&sz=w640':'https://i.ytimg.com/vi/'+video.youtube_id+'/hqdefault.jpg';
-const shareVideo=(video:ResourceVideo)=>{const url=new URL(window.location.href);url.hash='lesson/'+video.id;window.open('https://wa.me/?text='+encodeURIComponent([video.title,video.description?.trim(),url.toString()].filter(Boolean).join('\n\n')),'_blank','noopener,noreferrer');};
+const shareVideo=(video:ResourceVideo)=>{const url=new URL(window.location.href);url.hash='lesson/'+video.id;const configured=(import.meta.env.VITE_VIDEO_SHARE_ENDPOINT as string|undefined)?.trim();const shareUrl=configured?configured.replace(/\/$/,'')+'?id='+encodeURIComponent(video.id):url.toString();window.open('https://wa.me/?text='+encodeURIComponent([video.title,video.description?.trim(),shareUrl].filter(Boolean).join('\n\n')),'_blank','noopener,noreferrer');};
 const nabtGroupLabel=(group:string|null|undefined)=>group==='nabt1'?'نبت 1':group==='nabt2'?'نبت 2':'غير محددة';
 const statusLabel=(s:string)=>({planned:'مخطط لها',in_progress:'قيد الدراسة',completed:'مكتملة',for_benefit:'للفائدة'}[s]||s);
 export default function App(){
