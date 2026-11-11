@@ -8,7 +8,7 @@ ALTER TABLE public.resource_videos
   ADD CONSTRAINT resource_videos_valid_source
   CHECK (
     (youtube_id IS NOT NULL AND youtube_id ~ '^[A-Za-z0-9_-]{11}$')
-    OR (source_url IS NOT NULL AND source_url ~ '^https://drive\\.google\\.com/file/d/[A-Za-z0-9_-]+/view$')
+    OR (source_url IS NOT NULL AND source_url LIKE 'https://drive.google.com/file/d/%/view')
   );
 -- IMPORTANT: The existing list_lecture_videos RPC returns an explicit column
 -- signature in some deployments. Ensure it includes source_url in its response
