@@ -1,11 +1,12 @@
 import {useEffect,useRef,useState,type FormEvent} from 'react';
-import {Bot,Send,X,Settings2,ShieldCheck,KeyRound,Sparkles,ChevronDown,LoaderCircle,RotateCcw,CheckCircle2,AlertCircle,MessageCircle,Trash2,LockKeyhole} from 'lucide-react';
+import {Bot,Send,X,ShieldCheck,KeyRound,Sparkles,ChevronDown,LoaderCircle,RotateCcw,CheckCircle2,AlertCircle,MessageCircle,Trash2,LockKeyhole,History,Plus,ArrowRight} from 'lucide-react';
 import {supabase} from './supabase';
 import './nabt-ai.css';
 
 type Role='director'|'admin';
 type Status={enabled:boolean;configured:boolean;remaining:number;limit:number;model:string};
-type AssistantMessage={id:number;role:'assistant'|'user';text:string;values?:Record<string,string|number|null>;scope?:string};
+type AssistantMessage={id:string|number;role:'assistant'|'user';text:string;values?:Record<string,string|number|null>};
+type SavedChat={id:string;title:string;updated_at:string};
 type AiSettings={enabled:boolean;model:string;admin_daily_limit:number;director_daily_limit:number;allow_member_names:boolean;allow_university:boolean;allow_phone:boolean;allow_email:boolean;key1_configured:boolean;key2_configured:boolean};
 const starter:AssistantMessage={id:1,role:'assistant',text:'السلام عليكم 🌱 أنا مساعد نَبْت. اسأليني عن الحضور والتعويضات والجلسات والمصادر. إجاباتي من قاعدة بيانات المنصة، وبحسب صلاحياتك.'};
 const sampleQuestions=['كم تعويض هذا الشهر؟','كم نسبة الحضور هذا الشهر؟','كم جلسة انتهت؟','كم عضوة نشطة؟'];
@@ -30,19 +31,66 @@ const asInt=(value:unknown,fallback:number)=>typeof value==='number'&&Number.isF
 export function NabtAiAssistant({role}:{role:Role}){
  const [open,setOpen]=useState(false),[status,setStatus]=useState<Status|null>(null),[messages,setMessages]=useState<AssistantMessage[]>([starter]);
  const [question,setQuestion]=useState(''),[sending,setSending]=useState(false),[error,setError]=useState('');
+ const [chatId,setChatId]=useState<string|null>(null),[chats,setChats]=useState<SavedChat[]>([]),[showHistory,setShowHistory]=useState(false),[historyLoading,setHistoryLoading]=useState(false);
  const endRef=useRef<HTMLDivElement>(null);
+ async function refreshChats(){
+  if(!supabase)return;
+  const {data,error}=await supabase.from('nabt_ai_chats').select('id,title,updated_at').order('updated_at',{ascending:false}).limit(60);
+  if(error){setError('تعذر تحميل سجل المحادثات.');return;}
+  setChats((data||[]) as SavedChat[]);
+ }
+ async function openChat(id:string){
+  if(!supabase||sending)return;
+  setHistoryLoading(true);setError('');
+  try{
+   const {data,error}=await supabase.from('nabt_ai_chat_messages').select('id,role,body,value_cards').eq('chat_id',id).order('created_at',{ascending:true}).order('id',{ascending:true}).limit(250);
+   if(error)throw error;
+   setMessages((data||[]).map(row=>({id:row.id,role:row.role as 'user'|'assistant',text:row.body,values:row.role==='assistant'&&row.value_cards&&typeof row.value_cards==='object'&&!Array.isArray(row.value_cards)?row.value_cards as Record<string,string|number|null>:undefined})));
+   setChatId(id);setShowHistory(false);
+  }catch{setError('تعذر فتح المحادثة.');}
+  finally{setHistoryLoading(false);}
+ }
+ function newChat(){if(sending)return;setChatId(null);setMessages([starter]);setQuestion('');setError('');setShowHistory(false);}
+ async function deleteChat(id:string){
+  if(!supabase||sending||!window.confirm('حذف هذه المحادثة وسجلها بالكامل؟'))return;
+  const {error}=await supabase.from('nabt_ai_chats').delete().eq('id',id);
+  if(error){setError('تعذر حذف المحادثة.');return;}
+  if(chatId===id)newChat();
+  await refreshChats();
+ }
+ useEffect(()=>{if(open)void refreshChats();},[open]);
  useEffect(()=>{if(!open)return;let live=true;void callAi({action:'status'}).then(data=>{if(live)setStatus(data as unknown as Status)}).catch(e=>{if(live)setError(e instanceof Error?e.message:'تعذر معرفة الحصة.')});return()=>{live=false};},[open]);
  useEffect(()=>{if(open)endRef.current?.scrollIntoView({behavior:'smooth',block:'end'});},[messages,open]);
  async function send(text:string){
-  if(sending||text.trim().length<3)return;
+  if(sending||text.trim().length<3||!supabase)return;
   const content=text.trim();setQuestion('');setError('');setSending(true);
-  setMessages(m=>[...m,{id:Date.now(),role:'user',text:content}]);
+  const draftId=Date.now();
+  setMessages(m=>[...m,{id:draftId,role:'user',text:content}]);
+  let id=chatId;
   try{
+   const {data:userData,error:userError}=await supabase.auth.getUser();
+   if(userError||!userData.user)throw new Error('انتهت جلسة الدخول.');
+   if(!id){
+    const {data,error}=await supabase.from('nabt_ai_chats').insert({user_id:userData.user.id,title:content.slice(0,100)}).select('id').single();
+    if(error||!data)throw new Error('تعذر إنشاء محادثة جديدة.');
+    id=data.id;setChatId(id);
+   }
+   const {error:saveError}=await supabase.from('nabt_ai_chat_messages').insert({chat_id:id,user_id:userData.user.id,role:'user',body:content});
+   if(saveError)throw new Error('تعذر حفظ السؤال في السجل.');
    const data=await callAi({action:'chat',question:content});
-   setMessages(m=>[...m,{id:Date.now()+1,role:'assistant',text:String(data.answer||'لم أجد إجابة محددة.'),values:typeof data.values==='object'&&data.values?data.values as Record<string,string|number|null>:undefined,scope:typeof data.scope==='string'?data.scope:undefined}]);
-   setStatus(s=>s?{...s,remaining:asInt(data.remaining,s.remaining)}:s);
-  }catch(e){setError(e instanceof Error?e.message:'تعذر الرد على السؤال.');setQuestion(content);setMessages(m=>m.filter(x=>x.id!==0&&!(x.role==='user'&&x.text===content&&x===m[m.length-1])));}
-  finally{setSending(false);}
+   const reply=String(data.answer||'لم أجد إجابة محددة.');
+   const values=typeof data.values==='object'&&data.values?data.values as Record<string,string|number|null>:{};
+   setMessages(m=>[...m,{id:Date.now()+1,role:'assistant',text:reply,values}]);
+   setStatus(current=>current?{...current,remaining:asInt(data.remaining,current.remaining)}:current);
+   const {error:answerError}=await supabase.from('nabt_ai_chat_messages').insert({chat_id:id,user_id:userData.user.id,role:'assistant',body:reply,value_cards:values});
+   if(answerError)setError('وصل الرد، لكن تعذر حفظه في سجل المحادثة.');
+   await supabase.from('nabt_ai_chats').update({updated_at:new Date().toISOString()}).eq('id',id);
+   await refreshChats();
+  }catch(e){
+   setError(e instanceof Error?e.message:'تعذر الرد على السؤال.');
+   setQuestion(content);
+   setMessages(m=>m.filter(x=>x.id!==draftId));
+  }finally{setSending(false);}
  }
  const exhausted=status!==null&&status.remaining<=0;
  return <div className="nabt-ai-root" dir="rtl">
@@ -50,28 +98,39 @@ export function NabtAiAssistant({role}:{role:Role}){
    <header className="nabt-ai-head">
     <div className="nabt-ai-head-avatar"><Bot size={23}/></div>
     <div className="nabt-ai-head-copy"><strong>مساعد نَبْت الذكي</strong><small><span className="nabt-ai-live"/> Gemini · مساعد الإدارة</small></div>
+    <button type="button" className="nabt-ai-icon-btn" title="المحادثات السابقة" aria-label="المحادثات السابقة" onClick={()=>setShowHistory(v=>!v)}><History size={19}/></button>
+    <button type="button" className="nabt-ai-icon-btn" title="محادثة جديدة" aria-label="محادثة جديدة" onClick={newChat}><Plus size={19}/></button>
     <button type="button" className="nabt-ai-icon-btn" aria-label="إغلاق المساعد" onClick={()=>setOpen(false)}><X size={20}/></button>
    </header>
    <div className="nabt-ai-limit"><span><ShieldCheck size={15}/> {status?'باقي '+status.remaining+' من '+status.limit+' سؤال اليوم':'التحقق من الحصة...'}</span><span className="nabt-ai-role">{role==='director'?'المديرة':'الأدمن'}</span></div>
-   <div className="nabt-ai-thread" role="log" aria-live="polite">
+   {showHistory?<div className="nabt-ai-history">
+     <div className="nabt-ai-history-title"><strong>محادثاتي السابقة</strong><button type="button" onClick={()=>setShowHistory(false)} aria-label="الرجوع إلى المحادثة"><ArrowRight size={18}/></button></div>
+     <button type="button" className="nabt-ai-history-new" onClick={newChat}><Plus size={17}/> بدء محادثة جديدة</button>
+     {historyLoading&&<p>جاري تحميل المحادثة...</p>}
+     {chats.map(c=><div className={'nabt-ai-history-item '+(chatId===c.id?'selected':'')} key={c.id}>
+       <button type="button" onClick={()=>void openChat(c.id)} disabled={historyLoading||sending}><MessageCircle size={16}/><span>{c.title}</span><small>{new Date(c.updated_at).toLocaleDateString('ar-SD')}</small></button>
+       <button type="button" className="nabt-ai-history-delete" title="حذف المحادثة" aria-label={'حذف '+c.title} onClick={()=>void deleteChat(c.id)}><Trash2 size={15}/></button>
+     </div>)}
+     {!chats.length&&!historyLoading&&<p className="nabt-ai-history-empty">لسه ما عندك محادثات محفوظة. أول محادثة جديدة حتظهر هنا تلقائياً.</p>}
+    </div>:<div className="nabt-ai-thread" role="log" aria-live="polite">
     {messages.map(m=><div key={m.id} className={'nabt-ai-line '+(m.role==='user'?'is-user':'is-assistant')}>
      {m.role==='assistant'&&<div className="nabt-ai-bot-small"><Sparkles size={15}/></div>}
      <div className="nabt-ai-bubble">
       <p>{m.text}</p>
       {m.values&&Object.keys(m.values).length>0&&<div className="nabt-ai-stats">{Object.entries(m.values).slice(0,6).map(([key,val])=><div key={key}><small>{({attendance_rate:'الحضور %',participation_rate:'الالتزام %',attended:'حضور',compensations:'تعويضات',eligible_sessions:'فرص الحضور',sessions:'جلسات',members:'عضوات',active:'نشطة',inactive:'معطلة',books:'كتب',completed:'مكتملة',in_progress:'قيد الدراسة',videos:'مرئيات',published:'منشورة'} as Record<string,string>)[key]||key}</small><b>{val===null?'—':String(val)}</b></div>)}</div>}
-      {m.scope&&<small className="nabt-ai-source">المصدر: قاعدة بيانات نَبْت · {m.scope}</small>}
+
      </div>
     </div>)}
     {sending&&<div className="nabt-ai-typing"><LoaderCircle size={17} className="nabt-ai-spin"/> جاري تحليل السؤال والإحصائيات...</div>}
     <div ref={endRef}/>
-   </div>
-   {messages.length===1&&<div className="nabt-ai-suggestions">{sampleQuestions.map(q=><button type="button" key={q} disabled={sending||exhausted} onClick={()=>void send(q)}>{q}</button>)}</div>}
+   </div>}
+   {!showHistory&&messages.length===1&&<div className="nabt-ai-suggestions">{sampleQuestions.map(q=><button type="button" key={q} disabled={sending||exhausted} onClick={()=>void send(q)}>{q}</button>)}</div>}
    {error&&<p className="nabt-ai-error" role="alert"><AlertCircle size={16}/>{error}</p>}
    {!status?.configured&&status&&<p className="nabt-ai-notice"><KeyRound size={15}/> لم تتم إضافة مفتاح Gemini بعد. تُضاف المفاتيح من إعدادات النظام.</p>}
-   <form className="nabt-ai-compose" onSubmit={(e:FormEvent)=>{e.preventDefault();void send(question)}}>
+   {!showHistory&&<form className="nabt-ai-compose" onSubmit={(e:FormEvent)=>{e.preventDefault();void send(question)}}>
     <input aria-label="سؤالك للمساعد" value={question} maxLength={500} disabled={sending||exhausted} onChange={e=>setQuestion(e.target.value)} placeholder={exhausted?'انتهت أسئلتك لهذا اليوم':'اسألي عن بيانات نَبْت...'}/>
     <button type="submit" title="إرسال السؤال" disabled={sending||exhausted||question.trim().length<3}><Send size={19}/></button>
-   </form>
+   </form>}
    <footer className="nabt-ai-footer"><LockKeyhole size={12}/> المعلومات حسب صلاحية الحساب · لا تُرسل سجلات العضوات إلى Gemini</footer>
   </section>}
   <button type="button" className={'nabt-ai-fab '+(open?'is-open':'')} onClick={()=>setOpen(v=>!v)} aria-label={open?'إغلاق شات مساعد نبت':'فتح شات مساعد نبت'} aria-expanded={open}>
