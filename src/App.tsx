@@ -601,7 +601,7 @@ async function saveSeries(e:FormEvent){
  finally{setSaving(false);}
  }
  async function openMemberDetails(member:Profile){
-  if(!supabase||!director)return;
+  if(!supabase||!staff)return;
   setMemberDetails(member);
   setMemberPrivateDetails(null);
   setMemberDetailsError('');
@@ -651,7 +651,7 @@ async function saveSeries(e:FormEvent){
     average:rates.length?Math.round(rates.reduce((a,b)=>a+b,0)/rates.length):null};
  };
  async function processApplication(application:SignupApplication,action:'approve'|'reject'){
-  if(!supabase||!director||saving)return;
+  if(!supabase||!staff||saving)return;
   setSaving(true);setNotice('');
   try{
    const {data,error}=await supabase.functions.invoke('manage-nabt-applications',{body:{action,id:application.id}});
