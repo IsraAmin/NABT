@@ -7,7 +7,6 @@ type Config={enabled:boolean;model:string;admin_daily_limit:number;director_dail
 type Session={id:string;session_date:string;start_time:string|null;end_time:string|null;book_id:string|null;nabt_groups:string[]|null};
 type ResponseRow={session_id:string;member_id:string;response:string};
 const norm=(s:string)=>s.toLowerCase().normalize("NFKC").replace(/[\u064b-\u065f\u0670]/g,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/\s+/g," ").trim();
-const isObj=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==="object"&&!Array.isArray(x);
 const DATE_ZONE="Africa/Khartoum";
 const dayStamp=()=>new Intl.DateTimeFormat("en-CA",{timeZone:DATE_ZONE,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
 function monthTarget(offset:number){const now=dayStamp().split("-").map(Number);const d=new Date(Date.UTC(now[0],now[1]-1+offset,1));return d.toISOString().slice(0,7);}
@@ -24,11 +23,21 @@ function localIntent(question:string){
  return "overview";
 }
 function scrubQuestion(question:string,members:Profile[]){
- let safe=question;
- for(const name of members.map(m=>m.full_name).filter(Boolean).sort((a,b)=>b.length-a.length)){
-  safe=safe.split(name).join("[MEMBER]");
- }
- return safe.replace(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g,"[EMAIL]").replace(/\+?\d[\d\s()-]{7,}\d/g,"[PHONE]").slice(0,500);
+ // Nothing from the user's question goes to Gemini verbatim: names, phones,
+ // emails, and arbitrary personal content are never transmitted.
+ const q=norm(question);
+ return JSON.stringify({
+  asks_about_attendance:/(حضور|حضرت|غابت|غياب|التزام|نسبه)/.test(q),
+  asks_about_compensations:/(تعويض|عوضن|عوضت)/.test(q),
+  asks_about_sessions:/(جلسات|جلسه)/.test(q),
+  asks_about_members:/(عضوات|اعضاء|عضوه|عضو)/.test(q),
+  asks_about_books:/(كتاب|كتب|المكتبه)/.test(q),
+  asks_about_videos:/(فيديو|مرئيات|مرئيه)/.test(q),
+  asks_about_member_contact:/(رقم|هاتف|جوال|تلفون|ايميل|بريد|جامع[هة])/.test(q),
+  has_member_reference:members.some(m=>norm(m.full_name).length>2&&q.includes(norm(m.full_name))),
+  mentions_previous_month:/(الشهر الماضي|الشهر الفات|الشهر السابق|الشهر اللي فات)/.test(q),
+  mentions_all_time:/(كل الفتره|كل الشهور|التراكمي|من البدايه|اجمالي|الكل)/.test(q)
+ });
 }
 async function chooseIntent(question:string,members:Profile[],keys:string[],model:string){
  const scrubbed=scrubQuestion(question,members);
@@ -46,7 +55,8 @@ async function chooseIntent(question:string,members:Profile[],keys:string[],mode
    try{parsed=JSON.parse(value);}catch{parsed=JSON.parse(value.match(/\{[\s\S]*\}/)?.[0]||"{}");}
    const options=["attendance","compensations","sessions","members","books","videos","member_info","overview"];
    const intent=options.includes(String(parsed.intent))?String(parsed.intent):localIntent(question);
-   const period=["current","previous","all"].includes(String(parsed.period))?String(parsed.period):"current";
+   const localPeriod=/(الشهر الماضي|الشهر الفات|الشهر السابق|الشهر اللي فات)/.test(norm(question))?"previous":/(التراكمي|من البدايه|كل الشهور|كل الفتره)/.test(norm(question))?"all":null;
+   const period=localPeriod||(["current","previous","all"].includes(String(parsed.period))?String(parsed.period):"current");
    return {intent,period};
   }catch(error){clearTimeout(timer);problem=error instanceof Error?error.message:problem;}
  }
