@@ -31,7 +31,7 @@ export function NabtAiAssistant({role}:{role:Role}){
  const [open,setOpen]=useState(false),[status,setStatus]=useState<Status|null>(null),[messages,setMessages]=useState<AssistantMessage[]>([starter]);
  const [question,setQuestion]=useState(''),[sending,setSending]=useState(false),[error,setError]=useState('');
  const endRef=useRef<HTMLDivElement>(null);
- useEffect(()=>{if(!open)return;let live=true;void callAi({action:'status'}).then(data=>{if(live)setStatus(data as Status)}).catch(e=>{if(live)setError(e instanceof Error?e.message:'تعذر معرفة الحصة.')});return()=>{live=false};},[open]);
+ useEffect(()=>{if(!open)return;let live=true;void callAi({action:'status'}).then(data=>{if(live)setStatus(data as unknown as Status)}).catch(e=>{if(live)setError(e instanceof Error?e.message:'تعذر معرفة الحصة.')});return()=>{live=false};},[open]);
  useEffect(()=>{if(open)endRef.current?.scrollIntoView({behavior:'smooth',block:'end'});},[messages,open]);
  async function send(text:string){
   if(sending||text.trim().length<3)return;
@@ -90,12 +90,12 @@ export function NabtAiSettings(){
  const [settings,setSettings]=useState<AiSettings|null>(null),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false);
  const [key1,setKey1]=useState(''),[key2,setKey2]=useState(''),[show1,setShow1]=useState(false),[show2,setShow2]=useState(false);
  const [message,setMessage]=useState(''),[problem,setProblem]=useState('');
- async function refresh(){setLoading(true);try{const result=await callAi({action:'get_settings'});setSettings(result as AiSettings);setProblem('');}catch(e){setProblem(e instanceof Error?e.message:'تعذر تحميل الإعدادات.');}finally{setLoading(false)}}
+ async function refresh(){setLoading(true);try{const result=await callAi({action:'get_settings'});setSettings(result as unknown as AiSettings);setProblem('');}catch(e){setProblem(e instanceof Error?e.message:'تعذر تحميل الإعدادات.');}finally{setLoading(false)}}
  useEffect(()=>{void refresh();},[]);
  const edit=<K extends keyof AiSettings>(name:K,value:AiSettings[K])=>setSettings(s=>s?{...s,[name]:value}:s);
  async function save(){if(!settings)return;setSaving(true);setMessage('');setProblem('');
   try{
-   const {key1_configured:_a,key2_configured:_b,...payload}=settings;
+   const payload={enabled:settings.enabled,model:settings.model,admin_daily_limit:settings.admin_daily_limit,director_daily_limit:settings.director_daily_limit,allow_member_names:settings.allow_member_names,allow_university:settings.allow_university,allow_phone:settings.allow_phone,allow_email:settings.allow_email};
    await callAi({action:'save_settings',...payload});setMessage('تم حفظ إعدادات المساعد بنجاح.');
   }catch(e){setProblem(e instanceof Error?e.message:'تعذر الحفظ.');}finally{setSaving(false)}
  }
