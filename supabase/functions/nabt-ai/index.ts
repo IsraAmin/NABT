@@ -34,7 +34,7 @@ function scrubQuestion(question:string,members:Profile[]){
   asks_about_books:/(كتاب|كتب|المكتبه)/.test(q),
   asks_about_videos:/(فيديو|مرئيات|مرئيه)/.test(q),
   asks_about_member_contact:/(رقم|هاتف|جوال|تلفون|ايميل|بريد|جامع[هة])/.test(q),
-  has_member_reference:members.some(m=>norm(m.full_name).length>2&&q.includes(norm(m.full_name))),
+  has_member_reference:members.some(m=>norm(m.full_name).split(" ").some(part=>part.length>2&&q.includes(part))),
   mentions_previous_month:/(الشهر الماضي|الشهر الفات|الشهر السابق|الشهر اللي فات)/.test(q),
   mentions_all_time:/(كل الفتره|كل الشهور|التراكمي|من البدايه|اجمالي|الكل)/.test(q)
  });
@@ -55,7 +55,8 @@ async function chooseIntent(question:string,members:Profile[],keys:string[],mode
    try{parsed=JSON.parse(value);}catch{parsed=JSON.parse(value.match(/\{[\s\S]*\}/)?.[0]||"{}");}
    const options=["attendance","compensations","sessions","members","books","videos","member_info","overview"];
    const intent=options.includes(String(parsed.intent))?String(parsed.intent):localIntent(question);
-   const localPeriod=/(الشهر الماضي|الشهر الفات|الشهر السابق|الشهر اللي فات)/.test(norm(question))?"previous":/(التراكمي|من البدايه|كل الشهور|كل الفتره)/.test(norm(question))?"all":null;
+   const normalized=norm(question);
+   const localPeriod=/(الشهر الماضي|الشهر الفات|الشهر السابق|الشهر اللي فات)/.test(normalized)?"previous":/(التراكمي|من البدايه|كل الشهور|كل الفتره)/.test(normalized)?"all":members.some(m=>norm(m.full_name).split(" ").some(part=>part.length>2&&normalized.includes(part)))&&!/(اليوم|الشهر الحالي|هذا الشهر|الشهر ده|هذا الاسبوع|الاسبوع ده)/.test(normalized)?"all":null;
    const period=localPeriod||(["current","previous","all"].includes(String(parsed.period))?String(parsed.period):"current");
    return {intent,period};
   }catch(error){clearTimeout(timer);problem=error instanceof Error?error.message:problem;}
@@ -82,15 +83,21 @@ function makeAnswer(intent:string,period:string,question:string,members:Profile[
  ));
  const sessionIds=new Set(activeSessions.map(s=>s.id));
  const scopedMembers=members.filter(m=>m.role==="member"&&m.nabt_group&&scope.includes(m.nabt_group));
- const eligibleMembers=new Set(scopedMembers.map(m=>m.id));
+ const people=members.filter(m=>m.nabt_group&&scope.includes(m.nabt_group));
+ const eligibleMembers=new Set(people.map(m=>m.id));
  const filtered=answers.filter(a=>sessionIds.has(a.session_id)&&eligibleMembers.has(a.member_id));
  const q=norm(question);
- const found=scopedMembers.filter(m=>norm(m.full_name).length>2&&q.includes(norm(m.full_name))).sort((a,b)=>b.full_name.length-a.full_name.length);
- const member=found[0]||null;
+ const found=people.filter(m=>{
+  const name=norm(m.full_name);
+  const parts=name.split(" ").filter(part=>part.length>=3);
+  return name.length>2&&(q.includes(name)||parts.some(part=>q.split(/[^\p{L}\p{N}]+/u).some(token=>token.length>=3&&(token===part||token.startsWith(part)))));
+ }).sort((a,b)=>b.full_name.length-a.full_name.length);
+ const member=found.length===1?found[0]:null;
+ if(found.length>1)return respond("لقيت أكثر من حساب بالاسم دا. حددي الاسم الكامل: "+(config.allow_member_names?found.slice(0,6).map(m=>m.full_name).join("، "):"أضيفي الاسم الكامل عشان أحدد العضوة."));
  const group=q.includes("نبت ٢")||q.includes("نبت 2")?"nabt2":q.includes("نبت ١")||q.includes("نبت 1")?"nabt1":null;
- const selectedMembers=scopedMembers.filter(m=>(!member||m.id===member.id)&&(!group||m.nabt_group===group));
+ const selectedMembers=(member?[member]:scopedMembers).filter(m=>!group||m.nabt_group===group);
  const selectedIds=new Set(selectedMembers.map(m=>m.id));
- const selectedSessions=activeSessions.filter(s=>!group||withGroup(s.nabt_groups,[group]));
+ const selectedSessions=activeSessions.filter(s=>member?withGroup(s.nabt_groups,[member.nabt_group||""]):(!group||withGroup(s.nabt_groups,[group])));
  const selectedSessionsIds=new Set(selectedSessions.map(s=>s.id));
  const selectedResponses=filtered.filter(r=>selectedIds.has(r.member_id)&&selectedSessionsIds.has(r.session_id));
  const base={period:titlePeriod,month:month||"الكل",scope:scope.map(g=>g==="nabt1"?"نبت 1":"نبت 2").join(" و ")};
@@ -210,7 +217,7 @@ Deno.serve(async (req:Request)=>{
    allRows(db,"books","id,title,status,nabt_groups"),
    allRows(db,"resource_videos","id,is_published,nabt_groups")
   ]);
-  const members=(memberRows as unknown as Profile[]).filter(m=>m.role==="member"&&m.nabt_group&&scope.includes(m.nabt_group)&&m.approval_status==="approved");
+  const members=(memberRows as unknown as Profile[]).filter(m=>m.nabt_group&&scope.includes(m.nabt_group)&&m.approval_status==="approved");
   // Gemini only classifies sanitized questions: no database records, keys, or identifying fields are sent.
   const intent=await chooseIntent(question,members,keys,config.model);
   const raw=makeAnswer(intent.intent,intent.period,question,members,sessionRows as unknown as Session[],responseRows as unknown as ResponseRow[],bookRows,videoRows,config,scope,db);
