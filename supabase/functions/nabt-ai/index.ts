@@ -13,7 +13,7 @@ function monthTarget(offset:number){const now=dayStamp().split("-").map(Number);
 const withGroup=(groups:string[]|null,allowed:string[])=>Array.isArray(groups)&&groups.some(g=>allowed.includes(g));
 function localIntent(question:string){
  const q=norm(question);
- if(/(رقم|هاتف|جوال|تلفون|ايميل|بريد|جامع[هة])/.test(q))return "member_info";
+ if(/(رقم الهاتف|رقم الجوال|رقم التلفون|الهاتف|جوال|تلفون|ايميل|بريد|جامع[هة])/.test(q))return "member_info";
  if(/(تعويض|عوضن|عوضت)/.test(q))return "compensations";
  if(/(حضور|حضرت|الغياب|غابت|نسبه|التزام)/.test(q))return "attendance";
  if(/(كتاب|كتب|المكتبه)/.test(q))return "books";
@@ -54,7 +54,8 @@ async function chooseIntent(question:string,members:Profile[],keys:string[],mode
    let parsed:Record<string,unknown>;
    try{parsed=JSON.parse(value);}catch{parsed=JSON.parse(value.match(/\{[\s\S]*\}/)?.[0]||"{}");}
    const options=["attendance","compensations","sessions","members","books","videos","member_info","overview"];
-   const intent=options.includes(String(parsed.intent))?String(parsed.intent):localIntent(question);
+   const local=localIntent(question);
+   const intent=local!=="overview"?local:(options.includes(String(parsed.intent))?String(parsed.intent):"overview");
    const normalized=norm(question);
    const localPeriod=/(الشهر الماضي|الشهر الفات|الشهر السابق|الشهر اللي فات)/.test(normalized)?"previous":/(التراكمي|من البدايه|كل الشهور|كل الفتره)/.test(normalized)?"all":members.some(m=>norm(m.full_name).split(" ").some(part=>part.length>2&&normalized.includes(part)))&&!/(اليوم|الشهر الحالي|هذا الشهر|الشهر ده|هذا الاسبوع|الاسبوع ده)/.test(normalized)?"all":null;
    const period=localPeriod||(["current","previous","all"].includes(String(parsed.period))?String(parsed.period):"current");
