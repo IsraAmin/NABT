@@ -8,8 +8,7 @@ type Status={enabled:boolean;configured:boolean;remaining:number;limit:number;mo
 type AssistantMessage={id:string|number;role:'assistant'|'user';text:string;values?:Record<string,string|number|null>};
 type SavedChat={id:string;title:string;updated_at:string};
 type AiSettings={enabled:boolean;model:string;admin_daily_limit:number;director_daily_limit:number;allow_member_names:boolean;allow_university:boolean;allow_phone:boolean;allow_email:boolean;key1_configured:boolean;key2_configured:boolean};
-const starter:AssistantMessage={id:1,role:'assistant',text:'السلام عليكم ورحمة الله وبركاته 💚
-معاكِ مساعد نَبْت، تفضّلي بسؤالك!'};
+const starter:AssistantMessage={id:1,role:'assistant',text:'السلام عليكم ورحمة الله وبركاته 💚\nمعاكِ مساعد نَبْت، تفضّلي بسؤالك!'};
 const sampleQuestions=['كم تعويض هذا الشهر؟','كم نسبة الحضور هذا الشهر؟','كم جلسة انتهت؟','كم عضوة نشطة؟'];
 async function callAi(body:Record<string,unknown>):Promise<Record<string,unknown>>{
  if(!supabase)throw new Error('الاتصال بقاعدة البيانات غير متاح.');
